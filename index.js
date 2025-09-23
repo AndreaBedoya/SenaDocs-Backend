@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/hello", (req, res) => {
-  res.json({ message: "👋 Hola desde el backend de SenaDocs" });
+  res.json({ message: "SenaDocs" });
 });
 
 const tempStorage = multer.diskStorage({
