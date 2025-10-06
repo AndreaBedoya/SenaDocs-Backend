@@ -4,12 +4,19 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+// ---------------------------------------------
+import registroRoutes from "./Routes/Registro.js";
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 4000;
+
+
 
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
@@ -18,9 +25,8 @@ app.get("/", (req, res) => {
   res.send("🚀 Backend de SenaDocs funcionando correctamente");
 });
 
-app.get("/api/hello", (req, res) => {
-  res.json({ message: "SenaDocs" });
-});
+app.use("/api", registroRoutes);
+
 
 const tempStorage = multer.diskStorage({
   destination: (req, file, cb) => {
