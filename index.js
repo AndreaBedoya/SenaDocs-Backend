@@ -7,6 +7,8 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 // ---------------------------------------------
 import registroRoutes from "./Routes/Registro.js";
+import loginRoutes from "./Routes/Login.js";
+
 
 dotenv.config();
 
@@ -26,6 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", registroRoutes);
+app.use("/api", loginRoutes); 
 
 
 const tempStorage = multer.diskStorage({
