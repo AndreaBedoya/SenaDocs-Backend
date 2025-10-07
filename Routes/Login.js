@@ -1,6 +1,7 @@
 import express from "express";
 import pool from "../db.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -32,9 +33,17 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
 
-    // Si todo está bien, enviar respuesta
+    // Generar token JWT
+    const token = jwt.sign(
+      { identificacion: usuario.identificacion },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    // Enviar respuesta con token y datos del usuario
     res.status(200).json({
       mensaje: "Inicio de sesión exitoso",
+      token,
       usuario: {
         identificacion: usuario.identificacion,
         nombre_completo: usuario.nombre_completo,

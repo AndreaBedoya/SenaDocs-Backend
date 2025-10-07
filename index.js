@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 // ---------------------------------------------
 import registroRoutes from "./Routes/Registro.js";
 import loginRoutes from "./Routes/Login.js";
+import vistaPrincipalRoutes from "./Routes/VistaPrincipal.js";
 
 
 dotenv.config();
@@ -29,6 +30,8 @@ app.get("/", (req, res) => {
 
 app.use("/api", registroRoutes);
 app.use("/api", loginRoutes); 
+app.use("/api", vistaPrincipalRoutes);
+
 
 
 const tempStorage = multer.diskStorage({
