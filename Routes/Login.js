@@ -46,8 +46,7 @@ router.post("/login", async (req, res) => {
       token,
       usuario: {
         identificacion: usuario.identificacion,
-        nombre_completo: usuario.nombre_completo,
-        correo: usuario.correo
+        nombre_completo: usuario.nombre_completo
       }
     });
   } catch (error) {
