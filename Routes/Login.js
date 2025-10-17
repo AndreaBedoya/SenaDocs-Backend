@@ -40,13 +40,23 @@ router.post("/login", async (req, res) => {
       { expiresIn: "2h" }
     );
 
-    // Enviar respuesta con token y datos del usuario
+    // ✅ Enviar todos los datos del usuario como perfil plano
     res.status(200).json({
       mensaje: "Inicio de sesión exitoso",
       token,
       usuario: {
         identificacion: usuario.identificacion,
-        nombre_completo: usuario.nombre_completo
+        nombre_completo: usuario.nombre_completo,
+        correo: usuario.correo,
+        ciudad: usuario.ciudad,
+        nacimiento: usuario.nacimiento,
+        sangre: usuario.sangre,
+        telefono: usuario.telefono,
+        foto: usuario.foto,
+        cargo: usuario.cargo,
+        funciones: usuario.funciones,
+        nombre_emergencia: usuario.nombre_emergencia,
+        numero_emergencia: usuario.numero_emergencia
       }
     });
   } catch (error) {

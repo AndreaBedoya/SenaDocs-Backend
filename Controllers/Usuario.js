@@ -3,7 +3,7 @@ import pool from "../db.js";
 export const obtenerPerfil = async (req, res) => {
   try {
     const { documento } = req.params;
-    const result = await pool.query("SELECT * FROM perfil_usuarios WHERE documento = $1", [documento]);
+    const result = await pool.query("SELECT * FROM registro_usuarios WHERE documento = $1", [documento]);
     if (result.rows.length === 0) return res.status(404).json({ error: "Usuario no encontrado" });
     res.json(result.rows[0]);
   } catch (error) {
