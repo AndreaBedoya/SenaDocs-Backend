@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 const router = express.Router();
 
 router.post("/registro", async (req, res) => {
-  const { identificacion, nombre_completo, correo, contrasena } = req.body;
+  const { identificacion, nombre_completo, correo, contrasena, ciudad, nacimiento, sangre, telefono, foto, cargo, funciones, nombre_emergencia, numero_emergencia } = req.body;
 
   try {
     // Validar campos obligatorios
@@ -28,8 +28,8 @@ router.post("/registro", async (req, res) => {
 
     // Insertar el nuevo usuario
     const resultado = await pool.query(
-      "INSERT INTO registro_usuarios (identificacion, nombre_completo, correo, contrasena) VALUES ($1, $2, $3, $4) RETURNING *",
-      [identificacion, nombre_completo, correo, hash]
+      "INSERT INTO registro_usuarios (identificacion, nombre_completo, correo, contrasena, ciudad, nacimiento, sangre, telefono, foto, cargo, funciones, nombre_emergencia, numero_emergencia ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *",
+      [identificacion, nombre_completo, correo, hash, ciudad, nacimiento, sangre, telefono, foto, cargo, funciones, nombre_emergencia, numero_emergencia]
     );
 
     res.status(201).json({
