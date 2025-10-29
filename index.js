@@ -7,11 +7,11 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 
 // Rutas
-import registroRoutes from "./Routes/Registro.js";
-import loginRoutes from "./Routes/Login.js";
-import vistaPrincipalRoutes from "./Routes/VistaPrincipal.js";
-import usuarioRoutes from "./Routes/Usuario.js"; // Ruta para actualizar perfil
-import perfilRoutes from "./Routes/Perfil.js"; // Nueva ruta para obtener perfil
+import registroroutes from "./internal/routes/Registro.js";
+import loginroutes from "./internal/routes/Login.js";
+import Dashboardroutes from "./internal/routes/Dashboard.js";
+import usuarioroutes from "./internal/routes/Usuario.js"; // Ruta para actualizar perfil
+import perfilroutes from "./internal/routes/Perfil.js"; // Nueva ruta para obtener perfil
 
 dotenv.config();
 
@@ -28,11 +28,11 @@ app.get("/", (req, res) => {
   res.send("🚀 Backend de SenaDocs funcionando correctamente");
 });
 
-app.use("/api", registroRoutes);
-app.use("/api", loginRoutes);
-app.use("/api", vistaPrincipalRoutes);
-app.use("/api/perfil", perfilRoutes); // ✅ Ruta para obtener perfil
-app.use("/api/perfil", usuarioRoutes); // ✅ Ruta para actualizar perfil
+app.use("/api", registroroutes);
+app.use("/api", loginroutes);
+app.use("/api", Dashboardroutes);
+app.use("/api/perfil", perfilroutes); // ✅ Ruta para obtener perfil
+app.use("/api/perfil", usuarioroutes); // ✅ Ruta para actualizar perfil
 
 // Configuración de multer
 const tempStorage = multer.diskStorage({

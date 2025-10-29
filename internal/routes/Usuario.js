@@ -1,9 +1,12 @@
 import express from "express";
-import pool from "../db.js";
+import pool from "../../db.js";
+import bcrypt from "bcrypt";
+
 
 const router = express.Router();
 
-router.put("/perfil/:identificacion", async (req, res) => {
+// ✅ Ruta para actualizar perfil directamente en registro_usuarios
+router.put("/:identificacion", async (req, res) => {
   const { identificacion } = req.params;
   const {
     nombre_completo,
@@ -61,5 +64,40 @@ router.put("/perfil/:identificacion", async (req, res) => {
     res.status(500).json({ error: "Error al actualizar perfil" });
   }
 });
+
+router.put("/contrasena/:identificacion", async (req, res) => {
+  const { identificacion } = req.params;
+  const { contraseñaAnterior, nuevaContraseña } = req.body;
+
+  try {
+    const resultado = await pool.query(
+      "SELECT contrasena FROM registro_usuarios WHERE identificacion = $1",
+      [identificacion]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    const contrasenaActualHash = resultado.rows[0].contrasena;
+    const coincide = await bcrypt.compare(contraseñaAnterior, contrasenaActualHash);
+    if (!coincide) {
+      return res.status(401).json({ mensaje: "Contraseña actual incorrecta" });
+    }
+
+    const nuevaHash = await bcrypt.hash(nuevaContraseña, 10);
+    await pool.query(
+      "UPDATE registro_usuarios SET contrasena = $1 WHERE identificacion = $2",
+      [nuevaHash, identificacion]
+    );
+
+    res.status(200).json({ mensaje: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    console.error("❌ Error al actualizar contraseña:", error);
+    res.status(500).json({ mensaje: "Error al actualizar contraseña" });
+  }
+});
+
+
 
 export default router;

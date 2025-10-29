@@ -1,14 +1,14 @@
 {
   "name": "senadocs-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend modular para SenaDocs",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Andrea",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -17,8 +17,9 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
-    "nodemon": "^3.1.10",
-    "pg": "^8.16.3",
-    "zustand": "^5.0.8"
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
