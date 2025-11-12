@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { verificarToken } from "../../middlewares/verificarToken.js";
-import { organizarYRenombrarPDF } from "../Controllers/renombrarPDF.js";
+import { organizarYRenombrarPDF } from "../controllers/renombrarPDF.js";
 
 const router = express.Router();
 

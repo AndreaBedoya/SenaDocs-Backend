@@ -33,12 +33,12 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
 
-    // Generar token JWT
-    const token = jwt.sign(
-      { identificacion: usuario.identificacion },
-      process.env.JWT_SECRET,
-      { expiresIn: "2h" }
-    );
+      // Generar token JWT
+      const token = jwt.sign(
+          { identificacion: usuario.identificacion },
+          process.env.JWT_SECRET,
+          { expiresIn: "2h" }
+      );
 
     // ✅ Enviar todos los datos del usuario como perfil plano
     res.status(200).json({
