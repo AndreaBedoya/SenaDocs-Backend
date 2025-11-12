@@ -21,6 +21,46 @@ const tempStorage = multer.diskStorage({
 
 const upload = multer({ storage: tempStorage });
 
+/**
+ * @swagger
+ * /upload:
+ *   post:
+ *     summary: Subir y organizar archivos pdf
+ *     description: Subir multiples archivos pdf, organizar dentro de carpetas y renombrar automaticamente
+ *     tags: [Archivos]
+ *     security:
+ *       - bearerAuth: []   # Token JWT requerido
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               archivos:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: archivos pdf para subir
+ *               carpeta:
+ *                 type: string
+ *                 example: "CarpetaPrincipal"
+ *               ficha:
+ *                 type: string
+ *                 example: "Ficha12345"
+ *     responses:
+ *       200:
+ *         description: Archivos subidos y organizado exitosamente
+ *       400:
+ *         description: Archivos no encontrados o entrada invalida
+ *       401:
+ *         description: Inautorizado, no ha iniciado sesion
+ *       500:
+ *         description: Error de servidor mientras se subian los archivos
+ */
 // Ruta protegida para subir y renombrar archivos PDF
 router.post("/upload", verificarToken, upload.fields([
   { name: "archivos", maxCount: 100 },

@@ -5,6 +5,38 @@ import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Inicio de sesion
+ *     description: Autenticacion de usuario y generacion de token.
+ *     tags: [Login]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               identificacion:
+ *                 type: string
+ *                 example: "1002003004"
+ *               contrasena:
+ *                 type: string
+ *                 example: "user1234"
+ *     responses:
+ *       200:
+ *         description: Inicio de sesion exitoso
+ *       400:
+ *         description: Campos faltantes por llenar
+ *       401:
+ *         description: Contraseña invalida
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error de servidor
+ */
 router.post("/login", async (req, res) => {
   const { identificacion, contrasena } = req.body;
 
