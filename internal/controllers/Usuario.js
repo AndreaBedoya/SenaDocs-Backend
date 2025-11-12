@@ -1,4 +1,4 @@
-import pool from "../../db.js";
+import pool from "../../config/database.js";
 
 export const obtenerPerfil = async (req, res) => {
   try {

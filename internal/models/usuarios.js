@@ -37,12 +37,19 @@ module.exports = (sequelize) => {
         },
         telefono: {
             type: DataTypes.STRING(20),
+            allowNull: true,
         },
         activo: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
+        },
+
+        role_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
         }
+
     }, {
         tableName: "USUARIOS",
         timestamps: true,

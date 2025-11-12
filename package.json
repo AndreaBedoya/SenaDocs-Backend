@@ -2,10 +2,10 @@
   "name": "senadocs-backend",
   "version": "1.0.0",
   "description": "Backend modular para SenaDocs",
-  "main": "index.js",
+  "main": "internal/models/index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon internal/models/index.js"
   },
   "keywords": [],
   "author": "Andrea",

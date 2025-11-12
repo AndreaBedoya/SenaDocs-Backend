@@ -31,12 +31,5 @@ module.exports = (sequelize) => {
         freezeTableName: true,
     });
 
-    ROLES.associate = (models) => {
-        ROLES.hasMany(models.USUARIOS, {
-            foreignKey: "role_id",
-            as: "users",
-        });
-    };
-
     return ROLES;
 };

@@ -1,16 +1,16 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { swaggerDocs } from "./swagger.js";
+import { swaggerDocs } from "../../config/swagger.js";
 
 // ====================
 // Rutas internas
 // ====================
-import registroroutes from "./internal/routes/Registro.js";
-import loginroutes from "./internal/routes/Login.js";
-import Dashboardroutes from "./internal/routes/Dashboard.js";
-import usuarioroutes from "./internal/routes/Usuario.js";
-import perfilroutes from "./internal/routes/Perfil.js";
+import registroroutes from "../../routes/Registro.js";
+import loginroutes from "../../routes/Login.js";
+import Dashboardroutes from "../../routes/Dashboard.js";
+import usuarioroutes from "../../routes/Usuario.js";
+import perfilroutes from "../../routes/Perfil.js";
 
 dotenv.config();
 
