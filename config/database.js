@@ -1,15 +1,17 @@
 // Conexion de la base de datos
-import { Pool } from "pg";
+import { Sequelize} from "sequelize";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const pool = new Pool({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  port: process.env.PG_PORT,
-});
+export const sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+      dialect: "postgres",
+      logging: true,
+      host: process.env.DB_HOST
+    }
+);
 
-export default pool;

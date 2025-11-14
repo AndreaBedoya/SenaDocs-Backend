@@ -2,6 +2,13 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { swaggerDocs } from "../../config/swagger.js";
+import { sequelize} from "../../config/database.js";
+import './usuarios.js'
+
+sequelize.sync()
+    .then(() => console.log('Modelos sincronizados correctamente'))
+    .catch((err) => console.log('Error al sincronizar modelos',err));
+
 
 // ====================
 // Rutas internas
