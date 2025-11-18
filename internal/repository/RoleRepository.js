@@ -1,5 +1,5 @@
 const db = require("../models");
-const {ROLES, Usuarios} = db;
+const {ROLES} = db;
 
 class RoleRepository {
     /**
