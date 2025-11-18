@@ -2,6 +2,7 @@ import express from "express";
 import sequelize from "../config/database.js";
 import bcrypt from "bcrypt";
 
+
 const router = express.Router();
 
 /**

@@ -1,5 +1,5 @@
 // Conexion de la base de datos
-import { Sequelize} from "sequelize";
+import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
 
 dotenv.config();
