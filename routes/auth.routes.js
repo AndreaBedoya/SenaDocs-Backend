@@ -1,3 +1,24 @@
+// Archivo: internal/routes/auth.routes.js
+
 const express = require('express');
 const router = express.Router();
-const authController = require('../internal/controllers/');
+
+// >>> IMPORTACIÓN CORREGIDA <<<
+const authController = require('../controllers/AuthController');
+
+// Importa los middlewares de tu compañero para proteger rutas
+const { authMiddleware } = require('../middlewares/authMiddleware');
+
+// ==========================================
+// Rutas de Autenticación
+// ==========================================
+
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+
+// Rutas protegidas (usando el middleware de tu compañero)
+router.get('/me', authMiddleware, authController.getProfile);
+
+// Pendiente: Rutas de Recuperación (Forgot/Reset Password)
+
+module.exports = router;

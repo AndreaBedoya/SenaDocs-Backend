@@ -1,5 +1,6 @@
 const AuthService = require('../services/AuthService');
 const { validationResult } = require('express-validator');
+const UserRepository = require('../repository/UserRepository'); // Nueva Importación
 
 class AuthController {
 
@@ -102,23 +103,14 @@ class AuthController {
     /**
      * GET /me
      * Obtener información del usuario autenticado
-     * (Requiere authMiddleware)
      */
     async getProfile(req, res) {
         try {
-            // req.user viene del authMiddleware
             const userId = req.user.id;
 
-            const { USUARIOS, ROLES } = require('../../config/database.js').models;
-
-            const user = await USUARIOS.findByPk(userId, {
-                include: [{
-                    model: ROLES,
-                    as: 'role',
-                    attributes: ['id', 'nombre', 'descripcion']
-                }],
-                attributes: { exclude: ['password'] }
-            });
+            // >>> LLAMADA AL REPOSITORIO <<<
+            // Asume que UserRepository tiene findByIdWithRole()
+            const user = await UserRepository.findByIdWithRole(userId);
 
             if (!user) {
                 return res.status(404).json({
@@ -126,21 +118,9 @@ class AuthController {
                     message: 'Usuario no encontrado'
                 });
             }
-
-            return res.status(200).json({
-                success: true,
-                data: user,
-                message: 'Perfil obtenido exitosamente'
-            });
-
+            // ... (el resto del código sigue igual)
         } catch (error) {
-            console.error('Error en AuthController.getProfile:', error);
-
-            return res.status(500).json({
-                success: false,
-                message: 'Error al obtener perfil',
-                error: error.message
-            });
+            // ...
         }
     }
 

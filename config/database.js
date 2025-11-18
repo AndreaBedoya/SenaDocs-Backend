@@ -1,17 +1,41 @@
-// Conexion de la base de datos
-import { Sequelize} from "sequelize";
-import dotenv from "dotenv";
+// Archivo: config/database.js
 
+const { Sequelize } = require("sequelize");
+const dotenv = require("dotenv");
+
+// Asegúrate de que dotenv.config() se ejecute ANTES de acceder a process.env
 dotenv.config();
 
-export const sequelize = new Sequelize(
+// Usamos las variables estándar de Sequelize
+const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USER,
     process.env.DB_PASSWORD,
     {
-      dialect: "postgres",
-      logging: true,
-      host: process.env.DB_HOST
+        dialect: "postgres",
+        logging: false, // Recomendable desactivar logs en entornos de prueba
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT // Asegúrate de incluir el puerto
     }
 );
 
+// Función de conexión que usamos en el archivo principal (app.js)
+const connectDB = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('✅ Conexión a PostgreSQL establecida.');
+
+        // Sincroniza los modelos. USAMOS force: false para no borrar la BD en cada arranque.
+        // Los modelos deben cargarse en el index.js ANTES de este paso.
+        await sequelize.sync({ force: false });
+        console.log('Modelos de BD sincronizados.');
+    } catch (error) {
+        console.error('Error al conectar o sincronizar la BD:', error.message);
+        process.exit(1);
+    }
+};
+
+module.exports = {
+    sequelize,
+    connectDB
+};

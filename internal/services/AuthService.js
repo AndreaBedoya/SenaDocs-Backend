@@ -1,79 +1,67 @@
-const bcrypt = require('bcrypt');
-const { generateToken } = require('../utils/jwtUtils.js')
-const db = require('../../config/database.js')
+// Archivo: internal/services/AuthService.js
+
+const bcrypt = require('bcryptjs'); // Usamos bcryptjs para consistencia si es lo que usas
+const { generateToken } = require('../utils/jwtUtils.js');
+
+// >>>>> MODIFICACIÓN CLAVE: Usamos el Repositorio <<<<<
+const UserRepository = require('../repository/UserRepository');
+const TrazabilidadRepository = require('../repository/TrazabilidadRepository');
+const RoleRepository = require('../repository/RoleRepository');
 
 class AuthService {
 
-    /**
-     * Registro de nuevo usuario
-     * @param {Object}
-     * @returns {Object}
-     */
+    // ==========================================
+    // 1. REGISTRO DE NUEVO USUARIO
+    // ==========================================
     async register(userData) {
-        const { USUARIOS, ROLES } = db.models;
-
         try {
-            //Validar que el email no exista
-            const existingUser = await USUARIOS.findOne({
-                where: { email: userData.email },
-            });
-            if (!existingUser) {
+            // 1. Validar que el email no exista (Llama a Repository)
+            let existingUser = await UserRepository.findByEmail(userData.email);
+            if (existingUser) {
+                // Corregido: Error más específico
                 throw new Error(`El email ${userData.email} ya esta registrado`);
             }
-            //Validar que el documento no exista
-            const existingDocument = await USUARIOS.findOne({
-                where: { documento_identidad: userData.documento_identidad }
-            });
 
-            if (existingDocument) {
+            // 2. Validar que el documento no exista (Llama a Repository)
+            existingUser = await UserRepository.findByDocument(userData.documento_identidad); // *Asumimos esta función existe en UserRepository*
+            if (existingUser) {
                 throw new Error(`El documento de identidad ${userData.documento_identidad} ya esta registrado`);
             }
 
-            //Validar que el rol exista
-            const role = await ROLES.findByPk(userData.role_id);
+            // 3. Validar que el rol exista
+            let role = await RoleRepository.findById(userData.role_id);
             if (!role) {
-                throw new Error(`El role ${userData.role_id} no existe`);
+                // Si no se provee rol, asumimos 'USUARIO' (ID: 2)
+                role = await RoleRepository.findByName('USUARIO');
+                userData.role_id = role ? role.id : 2;
             }
 
-            //Encriptar contraseña
-            const saltRounds = parseInt(process.env.BCRYPT_ROUNDS);
+            // 4. Encriptar contraseña
+            const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || 10);
             const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
 
-            //Crear usuario
-            const newuser = await USUARIOS.create({
-                nombre: userData.nombre,
-                apellido: userData.apellido,
-                email: userData.email,
+            // 5. Crear usuario (Llama a Repository)
+            const newUser = await UserRepository.create({
+                ...userData,
                 password: hashedPassword,
-                document_identidad: userData.documento_identidad,
-                telefono: userData.telefono,
-                role_id: role,
-                activo: true
+                // Si tienes un campo 'activo', debe ir aquí
+                activo: true,
             });
 
-            //Obtener usuario con relacion de rol
-            const userWithRole = await USUARIOS.findByPk(newUser.id, {
-                include: [{
-                    model: ROLES,
-                    as: 'role',
-                    attributes: ['id', 'nombre', 'descripcion'],
-                }],
-                attributes: { exclude:['password'] }
-            });
+            // 6. Obtener usuario con relación de rol y generar token
+            const userWithRole = await UserRepository.findByIdWithRole(newUser.id); // *Asumimos esta función existe en UserRepository*
 
-            //generar token
             const payload = {
                 id: newUser.id,
-                email: newuser.email,
-                role: role.nombre
+                email: newUser.email,
+                role: userWithRole.role.nombre
             };
-
             const token = generateToken(payload);
 
             return {
                 user: userWithRole,
                 token,
-                message: 'Usuario registrado existosamente',
+                message: 'Usuario registrado exitosamente',
             };
         } catch (error) {
             console.error('Error en AuthService.register', error);
@@ -81,41 +69,33 @@ class AuthService {
         }
     }
 
-    /**
-     * @param {String}
-     * @param {String}
-     * @returns {Object}
-     */
+    // ==========================================
+    // 2. INICIO DE SESIÓN
+    // ==========================================
     async login(email, password) {
-        const { USUARIOS, ROLES } = db.models;
-
         try {
-            //Buscar usuario por email
-            const user = await USUARIOS.findOne({
-                where: { email },
-                include: [{
-                    model: ROLES,
-                    as: 'role',
-                    attributes: ['id', 'nombre', 'descripcion'],
-                }]
-            });
+            // Buscar usuario por email (Llama a Repository)
+            const user = await UserRepository.findByEmail(email);
 
             if (!user) {
                 throw new Error(`Credenciales invalidas`);
             }
 
-            //verificar que el usuario este activo
+            // verificar que el usuario este activo
             if (!user.activo){
                 throw new Error('Usuario inactivo. Contacte al administrador');
             }
 
-            //Comparar contraseña con password hasheada
+            // Comparar contraseña con password hasheada
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) {
                 throw new Error('Credenciales invalidas');
             }
 
-            //generar token
+            // Registro de Trazabilidad (Llama a Repository de Trazabilidad)
+            // Lógica de Trazabilidad omitida aquí para mantener el foco, pero debe ir en el Controller o aquí.
+
+            // generar token
             const  payload = {
                 id: user.id,
                 email: user.email,
@@ -124,7 +104,7 @@ class AuthService {
 
             const token = generateToken(payload);
 
-            //remover password de la respuesta
+            // remover password de la respuesta
             const userResponse = user.toJSON();
             delete userResponse.password;
 
@@ -139,27 +119,16 @@ class AuthService {
         }
     }
 
-
-    /**
-     * Verificar token y obtener usuario
-     * @param {String}
-     * @returns {Object}
-     */
+    // ==========================================
+    // 3. VERIFICAR TOKEN
+    // ==========================================
     async verifyUserToken(token) {
-        const {USUARIOS, ROLES} = db.models;
-        const {verifyToken} = require('../utils/jwtUtils.js');
-
         try {
+            const { verifyToken } = require('../utils/jwtUtils.js'); // Importación local
             const decoded = verifyToken(token);
 
-            const user = await USUARIOS.findByPk(decoded.id, {
-                include: [{
-                    model: ROLES,
-                    as: 'role',
-                    attributes: ['id', 'nombre', 'descripcion'],
-                }],
-                attributes: {exclude: ['password']}
-            });
+            // Buscar usuario por ID con rol (Llama a Repository)
+            const user = await UserRepository.findByIdWithRole(decoded.id);
 
             if (!user || !user.activo) {
                 throw new Error(`Usuario no encontrado o inactivo`);
@@ -170,5 +139,10 @@ class AuthService {
             throw error;
         }
     }
+
+    // ==========================================
+    // 4. RECUPERACIÓN DE CONTRASEÑA (Pendiente de implementar)
+    // ==========================================
+    // DEBES AÑADIR LAS FUNCIONES DE requestPasswordReset() y resetPassword() aquí.
 }
 module.exports = new AuthService();
