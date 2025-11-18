@@ -1,57 +1,88 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import { swaggerDocs } from "../../config/swagger.js";
-import { sequelize} from "../../config/database.js";
-import './usuarios.js'
+const { sequelize, DataTypes } = require('sequelize');
+const sequelize = require("../config/database");
+const db = {};
 
-sequelize.sync()
-    .then(() => console.log('Modelos sincronizados correctamente'))
-    .catch((err) => console.log('Error al sincronizar modelos',err));
+db.ROLES = require("./Roles")(sequelize);
+db.USUARIOS = require("./Usuarios")(sequelize);
+db.CATEGORIAS = require("./Categorias")(sequelize);
+db.DOCUMENTOS = require("./Documentos")(sequelize);
+db.EVALUACIONES = require("./Evaluaciones")(sequelize);
+db.TRAZABILIDAD_SESIONES = require("./TrazabilidadSesiones")(sequelize);
+db.NOVEDADES_ACADEMICAS = require("./NovedadesAcademicas")(sequelize);
 
-
-// ====================
-// Rutas internas
-// ====================
-import registroroutes from "../../routes/Registro.js";
-import loginroutes from "../../routes/Login.js";
-import Dashboardroutes from "../../routes/Dashboard.js";
-import usuarioroutes from "../../routes/Usuario.js";
-import perfilroutes from "../../routes/Perfil.js";
-
-dotenv.config();
-
-const app = express();
-const PORT = 4000;
-
-// ====================
-// Middleware base
-// ====================
-app.use(cors({ origin: "http://localhost:5173" }));
-app.use(express.json());
-
-// ====================
-// Rutas API
-// ====================
-app.get("/", (req, res) => {
-    res.send("🚀 Backend de SenaDocs funcionando correctamente");
+db.USUARIOS.belongsTo(db.ROLES, {
+    foreignKey: "rol_id",
+    as: "rol"
+});
+db.ROLES.hasMany(db.USUARIOS, {
+    foreignKey: "rol_id",
+    as: "usuarios",
 });
 
-app.use("/api", registroroutes);
-app.use("/api", loginroutes);
-app.use("/api", Dashboardroutes);
-app.use("/api/perfil", perfilroutes);
-app.use("/api/perfil", usuarioroutes);
-
-// ====================
-// Swagger Documentation
-// ====================
-swaggerDocs(app);
-
-// ====================
-// Servidor en marcha
-// ====================
-app.listen(PORT, () => {
-    console.log(`🚀 Backend de SenaDocs corriendo en http://localhost:${PORT}`);
-    console.log(`📚 Swagger disponible en http://localhost:${PORT}/api-docs`);
+db.DOCUMENTOS.belongsTo(db.USUARIOS, {
+    foreignKey: "usuario_id",
+    as: "autor",
 });
+db.USUARIOS.hasMany(db.DOCUMENTOS, {
+    foreignKey: "usuario_id",
+    as: "documentosSubidos",
+});
+
+db.DOCUMENTOS.belongsTo(db.CATEGORIAS, {
+    foreignKey: "categoria_id",
+    as: "categoria",
+});
+db.CATEGORIAS.hasMany(db.DOCUMENTOS, {
+    foreignKey: "categoria_id",
+    as: "documentos",
+});
+
+db.EVALUACIONES.belongsTo(db.DOCUMENTOS, {
+    foreignKey: "documento_id",
+    as: "documentos",
+});
+db.DOCUMENTOS.hasMany(db.EVALUACIONES, {
+    foreignKey: "documento_id",
+    as: "evaluaciones",
+});
+
+db.EVALUACIONES.belongsTo(db.USUARIOS, {
+    foreignKey: "evaluador_id",
+    as: "evaluador",
+});
+db.USUARIOS.hasMany(db.EVALUACIONES, {
+    foreignKey: "evaluador_id",
+    as: "evaluacionesHechas",
+});
+
+db.TRAZABILIDAD_SESIONES.belongsTo(db.USUARIOS, {
+    foreignKey: "usuario_id",
+    as: "sesionUsuario",
+});
+db.USUARIOS.hasMany(db.TRAZABILIDAD_SESIONES, {
+    foreignKey: "usuario_id",
+    as: "historialAcceso",
+});
+
+db.NOVEDADES_ACADEMICAS.belongsTo(db.DOCUMENTOS, {
+    foreignKey: "documento_id",
+    as: "documentoRelacionado",
+});
+db.DOCUMENTOS.hasMany(db.NOVEDADES_ACADEMICAS, {
+    foreignKey: "documento_id",
+    as: "novedadesAcademicas",
+});
+
+db.NOVEDADES_ACADEMICAS.belongsTo(db.USUARIOS, {
+    foreignKey: "reportado_por_id",
+    as: "reportador",
+});
+db.USUARIOS.hasMany(db.NOVEDADES_ACADEMICAS, {
+    foreignKey: "reportado_por_id",
+    as: "novedadesReportes",
+});
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+module.exports = db;

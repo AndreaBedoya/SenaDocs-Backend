@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 
 /**
- * @param { object } sequelize
- * @returns { object }
+ * @param {object} sequelize
+ * @returns {object}
  */
 
 module.exports = (sequelize) => {
@@ -45,10 +45,10 @@ module.exports = (sequelize) => {
             defaultValue: true,
         },
 
-        role_id: {
+        rol_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-        }
+        },
 
     }, {
         tableName: "USUARIOS",
