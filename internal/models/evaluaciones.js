@@ -49,7 +49,15 @@ module.exports = (sequelize) => {
         fecha_evaluacion: {
             type: DataTypes.DATE,
             allowNull: false,
-        }
+        },
+        documento_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        evaluador_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
 
     }, {
         tableName: "EVALUACIONES",

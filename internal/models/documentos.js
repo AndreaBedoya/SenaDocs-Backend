@@ -67,7 +67,15 @@ module.exports = (sequelize) => {
         visitas: {
             type: DataTypes.INTEGER,
             defaultValue: 0,
-        }
+        },
+        usuario_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        categoria_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
 
     },  {
         tableName: "DOCUMENTOS",

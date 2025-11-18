@@ -45,10 +45,10 @@ module.exports = (sequelize) => {
             defaultValue: true,
         },
 
-        role_id: {
+        rol_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-        }
+        },
 
     }, {
         tableName: "USUARIOS",

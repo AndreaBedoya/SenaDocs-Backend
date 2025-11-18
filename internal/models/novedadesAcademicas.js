@@ -29,7 +29,15 @@ module.exports = (sequelize) => {
             type: DataTypes.ENUM("PENDIENTE", "RESUELTO"),
             allowNull: false,
             defaultValue: "PENDIENTE",
-        }
+        },
+        documento_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        reportado_por_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
 
     },  {
         tableName: "NOVEDADES_ACADEMICAS",

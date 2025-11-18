@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
         descripcion: {
             type: DataTypes.STRING(200),
             allowNull: false,
-        }
+        },
 
     },  {
         tableName: "ROLES",

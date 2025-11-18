@@ -13,6 +13,10 @@ module.exports = (sequelize) => {
             autoIncrement: true,
             allowNull: false,
         },
+        usuario_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         fecha_inicio: {
             type: DataTypes.DATE,
             allowNull: false,
@@ -28,7 +32,8 @@ module.exports = (sequelize) => {
         dispositivo: {
             type: DataTypes.STRING(255),
             allowNull: true,
-        }
+        },
+
 
     }, {
         tableName: 'TRAZABILIDAD_SESIONES',
