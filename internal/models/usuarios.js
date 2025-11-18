@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 
 /**
- * @param { object } sequelize
- * @returns { object }
+ * @param {object} sequelize
+ * @returns {object}
  */
 
 module.exports = (sequelize) => {

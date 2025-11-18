@@ -25,6 +25,7 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING(200),
             allowNull: false,
         }
+
     },  {
         tableName: "ROLES",
         timestamps: true,
@@ -32,4 +33,5 @@ module.exports = (sequelize) => {
     });
 
     return ROLES;
+
 };
