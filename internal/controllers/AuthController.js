@@ -71,10 +71,10 @@ class AuthController {
                 });
             }
 
-            const { email, password } = req.body;
+            const { documento_identidad, password } = req.body;
 
             //llamar servicio
-            const result = await AuthService.login(email, password);
+            const result = await AuthService.login(documento_identidad, password);
 
             //Respuesta existosa
             return res.status(200).json({

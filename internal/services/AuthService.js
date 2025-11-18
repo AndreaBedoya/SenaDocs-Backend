@@ -86,13 +86,13 @@ class AuthService {
      * @param {String}
      * @returns {Object}
      */
-    async login(email, password) {
+    async login(documento_identidad, password) {
         const { USUARIOS, ROLES } = db.models;
 
         try {
             //Buscar usuario por email
             const user = await USUARIOS.findOne({
-                where: { email },
+                where: { documento_identidad },
                 include: [{
                     model: ROLES,
                     as: 'role',
