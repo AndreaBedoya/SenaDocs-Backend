@@ -1,4 +1,4 @@
-const { verifyToken, extractTokenFromHeader } = require('../utils/jwtUtils.js')
+const { verifyToken, extractTokenFromHeader } = require('../utils/JwtUtils.js')
 const AuthService = require('../services/AuthService')
 const child_process = require("node:child_process");
 

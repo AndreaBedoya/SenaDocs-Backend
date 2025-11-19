@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const jwtConfig = require('../../config/jwt.js')
+const jwtConfig = require('../../config/Jwt.js')
 
 /**
  GENERAR TOKEN

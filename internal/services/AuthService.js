@@ -1,7 +1,7 @@
 // Archivo: internal/services/AuthService.js
 
 const bcrypt = require('bcryptjs'); // Usamos bcryptjs para consistencia si es lo que usas
-const { generateToken } = require('../utils/jwtUtils.js');
+const { generateToken } = require('../utils/JwtUtils.js');
 
 // >>>>> MODIFICACIÓN CLAVE: Usamos el Repositorio <<<<<
 const UserRepository = require('../repository/UserRepository');
@@ -124,7 +124,7 @@ class AuthService {
     // ==========================================
     async verifyUserToken(token) {
         try {
-            const { verifyToken } = require('../utils/jwtUtils.js'); // Importación local
+            const { verifyToken } = require('../utils/JwtUtils.js'); // Importación local
             const decoded = verifyToken(token);
 
             // Buscar usuario por ID con rol (Llama a Repository)

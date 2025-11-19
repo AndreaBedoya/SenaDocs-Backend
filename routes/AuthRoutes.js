@@ -1,13 +1,13 @@
-// Archivo: internal/routes/auth.routes.js
+// Archivo: internal/routes/AuthRoutes.js
 
 const express = require('express');
 const router = express.Router();
 
 // >>> IMPORTACIÓN CORREGIDA <<<
-const authController = require('../controllers/AuthController');
+const authController = require('../internal/controllers/AuthController');
 
 // Importa los middlewares de tu compañero para proteger rutas
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const { authMiddleware } = require('../internal/middlewares/authMiddleware');
 
 // ==========================================
 // Rutas de Autenticación

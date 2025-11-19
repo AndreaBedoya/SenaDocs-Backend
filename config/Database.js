@@ -1,4 +1,4 @@
-// Archivo: config/database.js
+// Archivo: config/Database.js
 
 const { Sequelize } = require("sequelize");
 const dotenv = require("dotenv");
@@ -19,14 +19,14 @@ const sequelize = new Sequelize(
     }
 );
 
-// Función de conexión que usamos en el archivo principal (app.js)
+// Función de conexión que usamos en el archivo principal (App.js)
 const connectDB = async () => {
     try {
         await sequelize.authenticate();
         console.log('✅ Conexión a PostgreSQL establecida.');
 
         // Sincroniza los modelos. USAMOS force: false para no borrar la BD en cada arranque.
-        // Los modelos deben cargarse en el index.js ANTES de este paso.
+        // Los modelos deben cargarse en el Index.js ANTES de este paso.
         await sequelize.sync({ force: false });
         console.log('Modelos de BD sincronizados.');
     } catch (error) {

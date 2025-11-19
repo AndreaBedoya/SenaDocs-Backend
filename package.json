@@ -2,16 +2,17 @@
   "name": "senadocs-backend",
   "version": "1.0.0",
   "description": "Backend modular para SenaDocs",
-  "main": "internal/models/index.js",
-  "type": "module",
+  "main": "internal/models/Index.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "nodemon internal/models/index.js"
+    "start": "nodemon App.js"
   },
   "keywords": [],
   "author": "Andrea",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
