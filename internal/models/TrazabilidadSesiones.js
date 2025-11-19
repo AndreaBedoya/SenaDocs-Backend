@@ -6,7 +6,7 @@ const { DataTypes } = require('sequelize');
  */
 
 module.exports = (sequelize) => {
-    TRAZABILIDAD_SESIONES = sequelize.define("TRAZABILIDAD_SESIONES", {
+    return sequelize.define("TRAZABILIDAD_SESIONES", {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -40,7 +40,5 @@ module.exports = (sequelize) => {
         timestamps: true,
         freezeTableName: true,
     });
-
-    return TRAZABILIDAD_SESIONES;
 
 }

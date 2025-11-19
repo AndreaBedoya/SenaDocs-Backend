@@ -6,7 +6,7 @@ const { DataTypes } = require("sequelize");
  */
 
 module.exports = (sequelize) => {
-    const DOCUMENTOS = sequelize.define("DOCUMENTOS", {
+    return sequelize.define("DOCUMENTOS", {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -77,13 +77,11 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
 
-    },  {
+    }, {
         tableName: "DOCUMENTOS",
         timestamps: true,
         freezeTableName: true,
 
     });
-
-    return DOCUMENTOS;
 
 }

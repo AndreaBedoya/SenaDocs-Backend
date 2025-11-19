@@ -4,10 +4,10 @@ const express = require('express');
 const router = express.Router();
 
 // >>> IMPORTACIÓN CORREGIDA <<<
-const authController = require('../internal/controllers/AuthController');
+const authController = require('../controllers/AuthController');
 
 // Importa los middlewares de tu compañero para proteger rutas
-const { authMiddleware } = require('../internal/middlewares/authMiddleware');
+const { authMiddleware } = require('../middlewares/AuthMiddleware');
 
 // ==========================================
 // Rutas de Autenticación

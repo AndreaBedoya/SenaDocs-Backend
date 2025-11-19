@@ -6,7 +6,7 @@ const { DataTypes } = require ("sequelize")
  */
 
 module.exports = (sequelize) => {
-    const CATEGORIAS = sequelize.define("CATEGORIAS", {
+    return sequelize.define("CATEGORIAS", {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -37,7 +37,5 @@ module.exports = (sequelize) => {
         timestamps: true,
         freezeTableName: true,
     });
-
-    return CATEGORIAS;
 
 };

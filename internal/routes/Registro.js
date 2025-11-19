@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "../config/Database.js";
+import pool from "../../config/Database.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();

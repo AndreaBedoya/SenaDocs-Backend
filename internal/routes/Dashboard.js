@@ -2,8 +2,8 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { verificarToken } from "../internal/middlewares/VerificarToken.js";
-import { organizarYRenombrarPDF } from "../internal/controllers/RenombrarPDF.js";
+import { verificarToken } from "../middlewares/VerificarToken.js";
+import { organizarYRenombrarPDF } from "../controllers/RenombrarPDF.js";
 
 const router = express.Router();
 

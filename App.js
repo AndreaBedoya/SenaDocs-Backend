@@ -9,7 +9,7 @@ dotenv.config();
 
 const { connectDB } = require("./config/Database");
 const models = require("./internal/models");
-const authRoutes = require("./routes/AuthRoutes");
+const authRoutes = require("./internal/routes/AuthRoutes");
 const {swaggerDocs} = require("./config/Swagger");
 
 const app = express();
