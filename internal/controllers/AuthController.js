@@ -61,10 +61,11 @@ class AuthController {
                 return res.status(400).json({ succes: false, message: "Faltan campos por llenar."})
             }
 
-            const resul = await authService.login({
+            const resul = await authService.login(
                 documento,
                 password
-            });
+            );
+
             return res.status(200).json({ succes: true, message: "Inicio de sesion exitoso", ...resul });
         } catch (error) {
             const statusCode = error.message.includes("login") ? 409 : 500;

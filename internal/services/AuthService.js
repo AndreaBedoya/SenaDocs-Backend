@@ -58,6 +58,11 @@ class AuthService {
         };
     }
 
+    /**
+     * @param {string} documento
+     * @param {string} password
+     * @returns {object}
+     */
     async login (documento, password) {
 
         const user = await UserRepository.findByDocument(documento);
@@ -65,8 +70,8 @@ class AuthService {
             throw new Error("Credenciales invalidas.");
         }
 
-        const compare = await bcrypt.compare(password, user.password);
-        if (!compare) {
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
             throw new Error("Credenciales invalidas.")
         }
 
@@ -81,7 +86,7 @@ class AuthService {
             user: {
                 id: user.id,
                 nombre: user.nombre,
-                rol: user.rol_id,
+                rol_id: user.rol_id,
             }
         };
 
