@@ -72,10 +72,6 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        categoria_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
 
     }, {
         tableName: "DOCUMENTOS",

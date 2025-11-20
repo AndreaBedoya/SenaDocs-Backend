@@ -50,6 +50,31 @@ class AuthController {
             });
         }
     }
+
+    async login(req, res) {
+        try {
+            const {
+                documento,
+                password
+            } = req.body;
+            if (!documento || !password) {
+                return res.status(400).json({ succes: false, message: "Faltan campos por llenar."})
+            }
+
+            const resul = await authService.login({
+                documento,
+                password
+            });
+            return res.status(200).json({ succes: true, message: "Inicio de sesion exitoso", ...resul });
+        } catch (error) {
+            const statusCode = error.message.includes("login") ? 409 : 500;
+            return res.status(statusCode).json({
+                succes: false,
+                message: error.message || "Error al procesar login."
+            });
+        }
+
+    }
 }
 
 module.exports = new AuthController();
