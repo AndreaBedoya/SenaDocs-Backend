@@ -44,6 +44,16 @@ class UserRepository {
             { where: { id: userId } }
         );
     }
+
+    /**
+     * Busca por identificacion.
+     * @param {number} identificacion
+     */
+    async findByDocument(identificacion){
+        return USUARIOS.findOne({
+            where: { documento: identificacion },
+        });
+    }
 }
 
 module.exports = new UserRepository();

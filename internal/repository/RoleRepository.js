@@ -19,6 +19,27 @@ class RoleRepository {
     async findAll(){
         return ROLES.findAll();
     }
+
+    /**
+     * Obtiene el rol por id.
+     * @param {number} id
+     * @returns {object}
+     */
+    async findById(id){
+        return ROLES.findByPk(id);
+    }
+
+
+    /**
+     * Obtiene el rol por nombre.
+     * @param {string} nombreRol
+     * @returns {object}
+     */
+    async findByName(nombreRol){
+        return ROLES.findOne({
+            where: {nombre: nombreRol}
+        })
+    }
 }
 
 module.exports = new RoleRepository();

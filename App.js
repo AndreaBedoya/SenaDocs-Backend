@@ -21,14 +21,14 @@ app.use(cors());
 app.use(express.json());
 
 // MONTAJE DE RUTAS
+const AuthRoutes = require("./internal/routes/AuthRoutes");
+app.use("/api/auth", AuthRoutes);
 
 app.get("/", (req, res) => {
     res.status(200).json({
         message: "API de SenaDocs funcionando. Visita /api/docs para la documentacion."
     });
 });
-
-app.use("/api/auth", authRoutes);
 
 // ARRANQUE DEL SERVIDOR
 

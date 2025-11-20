@@ -30,14 +30,34 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING(255),
             allowNull: false,
         },
-        documento_identidad: {
+        documento: {
             type: DataTypes.STRING(30),
             allowNull: false,
             unique: true,
         },
         telefono: {
             type: DataTypes.STRING(20),
-            allowNull: true,
+            allowNull: false,
+        },
+        contacto_emergencia: {
+            type: DataTypes.STRING(20),
+            allowNull: false,
+        },
+        nombre_contacto: {
+            type: DataTypes.STRING(100),
+            allowNull: false,
+        },
+        tipo_sangre: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+        },
+        fecha_nacimiento: {
+            type: DataTypes.DATEONLY,
+            allowNull: false,
+        },
+        funciones_trabajo: {
+            type: DataTypes.TEXT,
+            allowNull: false,
         },
         activo: {
             type: DataTypes.BOOLEAN,
