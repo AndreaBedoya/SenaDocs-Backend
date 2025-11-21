@@ -10,11 +10,13 @@ class AuthService {
         email,
         password,
         documento,
+        ciudad,
         telefono,
         contacto_emergencia,
         nombre_contacto,
         tipo_sangre,
         fecha_nacimiento,
+        cargo,
         funciones_trabajo,
         rol_id
     }){
@@ -34,35 +36,61 @@ class AuthService {
             email,
             password: hashedPassword,
             documento,
+            ciudad,
             telefono,
             contacto_emergencia,
             nombre_contacto,
             tipo_sangre,
             fecha_nacimiento,
+            cargo,
             funciones_trabajo,
             rol_id
         };
 
         const newUser = await UserRepository.create(userData);
 
-        const token = jwtUtils.generateToken({
-            id: newUser.id,
-            email: newUser.email,
-            role: newUser.rol_id,
-        });
-
         return {
-            token,
             user: {
                 id: newUser.id,
                 nombre: newUser.nombre,
-                email: newUser.email,
                 rol_id: newUser.rol_id,
             }
         };
     }
 
-    //async login ()
+    /**
+     * @param {string} documento
+     * @param {string} password
+     * @returns {object}
+     */
+    async login (documento, password) {
+
+        const user = await UserRepository.findByDocument(documento);
+        if (!user) {
+            throw new Error("Credenciales invalidas.");
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            throw new Error("Credenciales invalidas.")
+        }
+
+        const token = jwtUtils.generateToken({
+            id: user.id,
+            email: user.email,
+            rol: user.rol_id,
+        });
+
+        return {
+            token,
+            user: {
+                id: user.id,
+                nombre: user.nombre,
+                rol_id: user.rol_id,
+            }
+        };
+
+    }
 
 }
 

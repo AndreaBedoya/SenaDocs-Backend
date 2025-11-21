@@ -35,6 +35,14 @@ module.exports = (sequelize) => {
             allowNull: false,
             unique: true,
         },
+        ciudad: {
+            type: DataTypes.STRING(20),
+            allowNull: false,
+        },
+        foto: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
         telefono: {
             type: DataTypes.STRING(20),
             allowNull: false,
@@ -53,6 +61,10 @@ module.exports = (sequelize) => {
         },
         fecha_nacimiento: {
             type: DataTypes.DATEONLY,
+            allowNull: false,
+        },
+        cargo: {
+            type: DataTypes.STRING(30),
             allowNull: false,
         },
         funciones_trabajo: {

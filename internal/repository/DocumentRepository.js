@@ -1,5 +1,5 @@
 const db = require("../models");
-const {DOCUMENTOS, CATEGORIAS, USUARIOS} = db;
+const {DOCUMENTOS, USUARIOS} = db;
 
 class DocumentRepository {
     /**
