@@ -81,6 +81,15 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        reset_password_token: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        reset_password_expires: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+
 
     }, {
         tableName: "USUARIOS",
