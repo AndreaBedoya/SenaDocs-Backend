@@ -54,6 +54,17 @@ class UserRepository {
             where: { documento: identificacion },
         });
     }
+
+    /**
+     * Busca por token de recuperacion de password generado;
+     * @param {string} token de recuperacion
+     * @returns {object} usuario
+     */
+    async findByTokenPassword(token) {
+        return USUARIOS.findOne({
+            where: { reset_password_token: token },
+        });
+    }
 }
 
 module.exports = new UserRepository();

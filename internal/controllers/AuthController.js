@@ -1,4 +1,5 @@
 const authService = require('../services/AuthService');
+const {validationResult} = require("express-validator");
 
 class AuthController {
     async register(req, res) {
@@ -75,6 +76,28 @@ class AuthController {
             });
         }
 
+    }
+
+    async forgotPassword(req, res) {
+        try {
+            const errors = validationResult
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    succes: false,
+                    message: "Errores de validacion",
+                    errors: errors.array()
+                });
+            }
+
+            const { email } = req.body;
+
+            const result = await authService.requestPasswordReset(email);
+
+            return res.status(200).json({
+                succes: true,
+                message: result.message
+            });
+        }
     }
 }
 
