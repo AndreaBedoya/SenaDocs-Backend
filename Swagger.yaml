@@ -20,18 +20,20 @@ paths:
           application/json:
             schema:
               type: object
-              required: [nombre, apellido, email, password, documento, rol_id] # <--- CAMPOS OBLIGATORIOS
+              required: [nombre, apellido, email, password, documento, ciudad, telefono, contacto_emergencia, nombre_contacto, tipo_sangre, fecha_nacimiento, cargo, funciones_trabajo, rol_id ] # <--- CAMPOS OBLIGATORIOS
               properties:
                 nombre: { type: string, example: Ana }
                 apellido: { type: string, example: Pérez }
                 email: { type: string, format: email, example: ana.perez@senadocs.co }
                 password: { type: string, example: P4$$w0rdSeguro2025 }
                 documento: { type: string, example: '1023456789' }
+                ciudad: {type: string, example: "Bogota" }
                 telefono: { type: string, example: '3001234567' }
                 contacto_emergencia: { type: string, example: '3209876543' }
                 nombre_contacto: { type: string, example: Carlos Díaz }
-                fecha_nacimiento: { type: string, format: date, example: '1995-03-15' }
                 tipo_sangre: { type: string, example: 'O+' }
+                fecha_nacimiento: { type: string, format: date, example: '1995-03-15' }
+                cargo: { type: string, example: "Funcionario" }
                 funciones_trabajo: { type: string, example: 'Análisis de datos.' }
                 rol_id: { type: integer, example: 1 }
       responses:
