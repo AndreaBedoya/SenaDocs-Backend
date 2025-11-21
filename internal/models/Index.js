@@ -5,7 +5,6 @@ const db = {};
 
 db.ROLES = require("./Roles")(sequelize);
 db.USUARIOS = require("./Usuarios")(sequelize);
-db.CATEGORIAS = require("./Categorias")(sequelize);
 db.DOCUMENTOS = require("./Documentos")(sequelize);
 db.EVALUACIONES = require("./Evaluaciones")(sequelize);
 db.TRAZABILIDAD_SESIONES = require("./TrazabilidadSesiones")(sequelize);
@@ -28,16 +27,6 @@ db.USUARIOS.hasMany(db.DOCUMENTOS, {
     foreignKey: "usuario_id",
     as: "documentosSubidos",
 });
-
-db.DOCUMENTOS.belongsTo(db.CATEGORIAS, {
-    foreignKey: "categoria_id",
-    as: "categoria",
-});
-db.CATEGORIAS.hasMany(db.DOCUMENTOS, {
-    foreignKey: "categoria_id",
-    as: "documentos",
-});
-
 db.EVALUACIONES.belongsTo(db.DOCUMENTOS, {
     foreignKey: "documento_id",
     as: "documentos",

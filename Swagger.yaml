@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: SenaDocs Auth API
+  version: 1.0.0
+  description: Documentación de los endpoints de Registro e Inicio de Sesión.
+
+servers:
+  - url: http://localhost:4000/api/auth
+    description: Servidor de Autenticación Local
+
+paths:
+  /register:
+    post:
+      tags:
+        - Autenticación
+      summary: Registra un nuevo usuario en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nombre, apellido, email, password, documento, ciudad, telefono, contacto_emergencia, nombre_contacto, tipo_sangre, fecha_nacimiento, cargo, funciones_trabajo, rol_id ] # <--- CAMPOS OBLIGATORIOS
+              properties:
+                nombre: { type: string, example: Ana }
+                apellido: { type: string, example: Pérez }
+                email: { type: string, format: email, example: ana.perez@senadocs.co }
+                password: { type: string, example: P4$$w0rdSeguro2025 }
+                documento: { type: string, example: '1023456789' }
+                ciudad: {type: string, example: "Bogota" }
+                telefono: { type: string, example: '3001234567' }
+                contacto_emergencia: { type: string, example: '3209876543' }
+                nombre_contacto: { type: string, example: Carlos Díaz }
+                tipo_sangre: { type: string, example: 'O+' }
+                fecha_nacimiento: { type: string, format: date, example: '1995-03-15' }
+                cargo: { type: string, example: "Funcionario" }
+                funciones_trabajo: { type: string, example: 'Análisis de datos.' }
+                rol_id: { type: integer, example: 1 }
+      responses:
+        '201':
+          description: Registro exitoso.
+        '400':
+          description: Faltan campos obligatorios.
+        '409':
+          description: Email o documento ya registrado.
+
+  /login:
+    post:
+      tags:
+        - Autenticación
+      summary: Inicia sesión usando documento y contraseña.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [documento, password] # <--- DOCUMENTO y PASSWORD
+              properties:
+                documento: { type: string, example: '1023456789' }
+                password: { type: string, example: P4$$w0rdSeguro2025 }
+      responses:
+        '200':
+          description: Inicio de sesión exitoso. Devuelve el token JWT.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string, example: eyJhbGciOiJIUzI1NiIsInR5c... }
+        '401':
+          description: Credenciales inválidas.
