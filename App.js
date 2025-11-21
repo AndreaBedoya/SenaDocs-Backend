@@ -33,8 +33,8 @@ async function startServer() {
     try {
         await connectDB();
         app.listen(PORT, () => {
-            console.log(" Servidor backend corriendo en http://localhost:${PORT}");
-            console.log(" Documentacion de swagger disponible en http://localhost:${PORT}/api-docs");
+            console.log(` Servidor backend corriendo en http://localhost:${PORT}`);
+            console.log(` Documentacion de swagger disponible en http://localhost:${PORT}/api-docs`);
         });
 
     } catch (error) {
