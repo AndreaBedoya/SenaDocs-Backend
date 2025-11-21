@@ -2,26 +2,23 @@
 // IMPORTACIONES Y CONFIGURACION INICIAL
 
 const express = require("express");
+const app = express();
+const YAML = require("yamljs")
+const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
 dotenv.config();
 
-const { connectDB } = require("./config/Database");
-const models = require("./internal/models");
-const authRoutes = require("./internal/routes/AuthRoutes");
-const {swaggerDocs} = require("./config/Swagger");
-
-const app = express();
 const PORT = process.env.PORT || 4000;
 
-// MIDDLEWARES GLOBALES
+const swaggerDocument = YAML.load("./swagger.yaml");
+const { connectDB } = require("./config/Database");
+const AuthRoutes = require("./internal/routes/AuthRoutes");
 
 app.use(cors());
 app.use(express.json());
-
-// MONTAJE DE RUTAS
-const AuthRoutes = require("./internal/routes/AuthRoutes");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/auth", AuthRoutes);
 
 app.get("/", (req, res) => {
@@ -36,8 +33,8 @@ async function startServer() {
     try {
         await connectDB();
         app.listen(PORT, () => {
-            console.log(` Servidor backend corriendo en http://localhost:${PORT}`)
-            swaggerDocs(app, PORT);
+            console.log(` Servidor backend corriendo en http://localhost:${PORT}`);
+            console.log(` Documentacion de swagger disponible en http://localhost:${PORT}/api-docs`);
         });
 
     } catch (error) {
