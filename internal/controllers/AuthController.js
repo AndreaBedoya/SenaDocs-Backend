@@ -97,6 +97,81 @@ class AuthController {
                 succes: true,
                 message: result.message
             });
+        } catch (error) {
+            console.error("Error en AuthController.forgotPassword", error);
+
+            return res.status(500).json({
+                succes: false,
+                message: "Error al procesar la solicitud",
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Verificar si el token es valido
+     */
+    async verifyResetToken(req, res) {
+        try {
+            const { token } = req.params;
+            const result = await authService.verifyResetToken(token);
+            return res.status(200).json({
+                succes: true,
+                data: result,
+                message: result.message
+            });
+        } catch (error) {
+            console.error("Error en AuthController.verifyResetToken", error);
+
+            if (error.message.includes("Token")) {
+                return res.status(400).json({
+                    succes: false,
+                    message: error.message
+                });
+            }
+
+            return res.status(500).json({
+                succes: false,
+                message: "Error al verificar el token",
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Restablecer contraseña;
+     */
+    async resetPassword(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    succes: false,
+                    message: "Errores de validacion",
+                    errors: errors.array()
+                });
+            }
+
+            const { token, password } = req.body;
+            const result = await authService.resetPassword(token, password);
+            return res.status(200).json({
+                succes: false,
+                message: result.message
+            });
+        } catch (error) {
+            console.error("Error en AuthController.resetPassword", error);
+            if (error.message.includes("Token")) {
+                return res.status(400).json({
+                    succes: false,
+                    message: error.message
+                });
+            }
+
+            return res.status(500).json({
+                succes: false,
+                message: "Error al restablecer contraseña",
+                error: error.message
+            });
         }
     }
 }
