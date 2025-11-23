@@ -3,6 +3,7 @@
 const express = require("express");
 const app = express();
 const YAML = require("yamljs");
+const {verifyEmailConnection} = require("./internal/utils/EmailUtils");
 const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -13,9 +14,9 @@ const PORT = process.env.PORT || 4000;
 
 const swaggerDocument = YAML.load("./swagger.yaml");
 const { connectDB } = require("./config/Database");
-const AuthRoutes = require("./internal/routes/AuthRoutes");
+const authRoutes = require("./internal/routes/AuthRoutes");
 
-// 🔥 CORS CONFIG
+// CORS CONFIG
 app.use(cors({
     origin: "http://localhost:5173",   // Permitir el front
     credentials: true,                 // Si envías tokens/cookies
@@ -30,7 +31,7 @@ app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Rutas
-app.use("/api/auth", AuthRoutes);
+app.use("/api/auth", authRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
@@ -43,14 +44,16 @@ app.get("/", (req, res) => {
 async function startServer() {
     try {
         await connectDB();
+        console.log("Verificando configuracion de email...")
+        await verifyEmailConnection();
         app.listen(PORT, () => {
-            console.log(`🚀 Servidor backend corriendo en http://localhost:${PORT}`);
-            console.log(`📘 Documentacion de swagger disponible en http://localhost:${PORT}/api-docs`);
+            console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+            console.log(`Documentacion de swagger disponible en http://localhost:${PORT}/api-docs`);
         });
     } catch (error) {
-        console.error("❌ El servidor no pudo iniciar.", error);
+        console.error("El servidor no pudo iniciar.", error);
         process.exit(1);
     }
-}
+};
 
 startServer();

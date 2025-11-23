@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { verificarToken } from "../middlewares/VerificarToken.js";
+import { verificarTokenMiddleware } from "../middlewares/VerificarTokenMiddleware.js";
 import { organizarYRenombrarPDF } from "../controllers/RenombrarPDF.js";
 
 const router = express.Router();
@@ -62,7 +62,7 @@ const upload = multer({ storage: tempStorage });
  *         description: Error de servidor mientras se subian los archivos
  */
 // Ruta protegida para subir y renombrar archivos PDF
-router.post("/upload", verificarToken, upload.fields([
+router.post("/upload", verificarTokenMiddleware, upload.fields([
   { name: "archivos", maxCount: 100 },
   { name: "carpeta" },
   { name: "ficha" }
