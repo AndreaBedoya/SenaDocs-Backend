@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
 
-export function verificarTokenMiddleware(req, res, next) {
+function verificarTokenMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
@@ -15,3 +15,4 @@ export function verificarTokenMiddleware(req, res, next) {
     res.status(403).json({ error: "Token inválido o expirado." });
   }
 }
+module.exports = verificarTokenMiddleware;

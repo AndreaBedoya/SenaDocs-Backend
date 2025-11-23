@@ -1,53 +1,72 @@
-import pool from "../../config/Database.js";
+const UsuarioService = require('../services/UsuarioService.js');
+// Se agrega la importación del repositorio para el fallback (findById)
+const UserRepository = require('../repository/UserRepository.js');
 
-export const obtenerPerfil = async (req, res) => {
-  try {
-    const { documento } = req.params;
-    const result = await pool.query("SELECT * FROM registro_usuarios WHERE documento = $1", [documento]);
-    if (result.rows.length === 0) return res.status(404).json({ error: "Usuario no encontrado" });
-    res.json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener el perfil" });
-  }
+const UsuarioController = {
+    /**
+     * @description Controlador para actualizar la información de un usuario.
+     */
+    async actualizarUsuario(req, res) {
+        const userId = req.params.id;
+        const datosActualizar = req.body || {}; // Aseguramos que sea un objeto
+        console.log(datosActualizar);
+
+        try {
+            //Llamar al Servicio y almacenar el resultado completo
+            const resultadoUpdate = await UsuarioService.actualizarUsuario(userId, datosActualizar);
+
+            // Verificación para manejar el TypeError: undefined is not iterable
+            if (!Array.isArray(resultadoUpdate) || resultadoUpdate.length === 0) {
+                return res.status(500).json({ message: "Error interno del servidor: Resultado de DB no es un array válido." });
+            }
+
+            // Desestructuración segura de los elementos principales
+            const filasActualizadas = resultadoUpdate[0];
+            const instanciasActualizadas = resultadoUpdate[1]; // Puede ser undefined o array vacío
+
+            let usuarioActualizado = null;
+
+            //Verificar si hubo filas actualizadas
+            if (filasActualizadas === 0) {
+                return res.status(404).json({ message: "Usuario no encontrado o no se realizaron cambios." });
+            }
+
+            //Lógica para obtener la instancia actualizada
+            if (instanciasActualizadas && Array.isArray(instanciasActualizadas) && instanciasActualizadas.length > 0) {
+                usuarioActualizado = instanciasActualizadas[0];
+            } else {
+                // Realizamos una consulta findById para obtener el objeto actualizado
+                usuarioActualizado = await UserRepository.findById(userId);
+            }
+
+            //Preparar la respuesta final
+            const respuestaUsuario = usuarioActualizado ? usuarioActualizado.get({ plain: true }) : null;
+            if (respuestaUsuario) {
+                // Eliminamos campos sensibles
+                delete respuestaUsuario.password;
+                delete respuestaUsuario.reset_password_token;
+                delete respuestaUsuario.reset_password_expires;
+            }
+
+            return res.status(200).json({
+                message: "Usuario actualizado exitosamente",
+                usuario: respuestaUsuario,
+            });
+
+        } catch (error) {
+            console.error("Error al actualizar usuario:", error);
+
+            // Manejo de errores de Sequelize
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                return res.status(400).json({
+                    message: "Error de datos: El email o documento ya está registrado.",
+                    fields: error.errors.map(e => e.path)
+                });
+            }
+
+            return res.status(500).json({ message: "Error interno del servidor al actualizar el usuario." });
+        }
+    }
 };
 
-export const actualizarPerfil = async (req, res) => {
-  try {
-    const {
-      nombre, ciudad, nacimiento, funciones, correo, cargo, sangre,
-      telefono, nombre_emergencia, numero_emergencia, foto
-    } = req.body;
-
-    const { documento } = req.params;
-
-    await pool.query(
-      `INSERT INTO perfil_usuarios (
-        documento, nombre, ciudad, nacimiento, funciones, correo, cargo, sangre,
-        telefono, nombre_emergencia, numero_emergencia, foto
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8,
-        $9, $10, $11, $12
-      )
-      ON CONFLICT (documento) DO UPDATE SET
-        nombre = EXCLUDED.nombre,
-        ciudad = EXCLUDED.ciudad,
-        nacimiento = EXCLUDED.nacimiento,
-        funciones = EXCLUDED.funciones,
-        correo = EXCLUDED.correo,
-        cargo = EXCLUDED.cargo,
-        sangre = EXCLUDED.sangre,
-        telefono = EXCLUDED.telefono,
-        nombre_emergencia = EXCLUDED.nombre_emergencia,
-        numero_emergencia = EXCLUDED.numero_emergencia,
-        foto = EXCLUDED.foto`,
-      [
-        documento, nombre, ciudad, nacimiento, funciones, correo, cargo, sangre,
-        telefono, nombre_emergencia, numero_emergencia, foto
-      ]
-    );
-
-    res.json({ mensaje: "Perfil actualizado correctamente" });
-  } catch (error) {
-    res.status(500).json({ error: "Error al actualizar el perfil" });
-  }
-};
+module.exports = UsuarioController;

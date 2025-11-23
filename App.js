@@ -7,6 +7,7 @@ const {verifyEmailConnection} = require("./internal/utils/EmailUtils");
 const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const usuarioRoutes = require("./internal/routes/Usuario.js");
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Rutas
 app.use("/api/auth", authRoutes);
+app.use("/api/usuarios", usuarioRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
