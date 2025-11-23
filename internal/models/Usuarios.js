@@ -82,11 +82,11 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
         reset_password_token: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING(255),
             allowNull: true,
         },
         reset_password_expires: {
-            type: DataTypes.TEXT,
+            type: DataTypes.DATE,
             allowNull: true,
         },
 

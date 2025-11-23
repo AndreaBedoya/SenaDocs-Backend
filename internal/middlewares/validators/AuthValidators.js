@@ -1,3 +1,4 @@
+const { body } = require('express-validator');
 /**
  * Validacion para solicitar recuperacion de contraseña
  */
@@ -5,7 +6,6 @@ const forgotPasswordValidation = [
     body("email")
         .notEmpty().withMessage("El email es requerido")
         .isEmail().withMessage("El email no es valido")
-        .normalize()
         .trim()
 ];
 
@@ -21,7 +21,7 @@ const resetPasswordValidation = [
     body("password")
         .notEmpty().withMessage("La nueva contraseña es requerida")
         .isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres")
-        .matches(/^(?=,*[a-z])(?=,*[A-Z])(?=,*\d)/)
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
         .withMessage("La contraseña debe tener al menos una mayuscula, una minuscula y un numero"),
 
     body("confirmPassword")

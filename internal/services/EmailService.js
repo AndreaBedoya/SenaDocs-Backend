@@ -1,5 +1,5 @@
 const { sendEmail } = require("../utils/EmailUtils");
-// const { resetPasswordTemplate, passwordChangedTemplate } require("../utils/EmailTemplate.js");
+const { resetPasswordTemplate, passwordChangedTemplate } = require("../utils/EmailTemplateUtils");
 
 class EmailService {
     /**
@@ -11,12 +11,12 @@ class EmailService {
             const expireIn = process.env.RESET_PASSWORD_EXPIRES||60;
             const userName =`${user.nombre}, ${user.apellido}`;
 
-            //const html = resetPasswordTemplate(userName,resetUrl, expireIn);
+            const html = resetPasswordTemplate(userName,resetUrl, expireIn);
 
             await sendEmail({
                 to:user.email,
                 subject: "Recupera tu contraseña - SenaDocs",
-                //html,
+                html: html,
                 text: `Hola${user.name},
 
                 Recibimos una solicitud para restablecer tu contraseña.
@@ -47,7 +47,7 @@ class EmailService {
     async sendPasswordChangedEmail(user) {
         try {
             const userName = `${user.nombre}, ${user.apellido}`;
-            //const html = passwordChangedTemplate(Username);
+            const html = passwordChangedTemplate(userName);
 
             await sendEmail({
                 to: user.email,

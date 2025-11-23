@@ -80,7 +80,7 @@ class AuthController {
 
     async forgotPassword(req, res) {
         try {
-            const errors = validationResult
+            const errors = validationResult(req)
             if (!errors.isEmpty()) {
                 return res.status(400).json({
                     succes: false,

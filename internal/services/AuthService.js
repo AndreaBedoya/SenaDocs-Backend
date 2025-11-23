@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const UserRepository = require("../repository/UserRepository");
 const jwtUtils = require("../utils/JwtUtils");
-const crypto = require(Crypto);
+const crypto = require("crypto");
 const EmailService = require("../services/EmailService");
 
 class AuthService {
@@ -107,7 +107,7 @@ class AuthService {
                 };
             }
             // generar token
-            const resetToken = crypto.default.randomBytes(32).toString("hex");
+            const resetToken = crypto.randomBytes(32).toString("hex");
             // calcular fecha de expiracion
             const expiresIn = parseInt(process.env.RESET_PASSWORD_EXPIRES)||60;//minutos
             const expirationDate = new Date(Date.now() + expiresIn * 60 * 1000);
@@ -118,7 +118,7 @@ class AuthService {
             });
 
             //Enviar email
-            await EmailService.sendPasswordChangedEmail(user, resetToken);
+            await EmailService.sendPasswordResetEmail(user, resetToken);
 
             return{
                 succes: true,
@@ -186,7 +186,7 @@ class AuthService {
             }
             //encriptar nueva password
             const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 10;
-            const hashedPassword = await bcrypt.default.hash(newPassword, saltRounds);
+            const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
             //actualizar contraseña y limpiar token
             await user.update({
                 password: hashedPassword,

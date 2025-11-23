@@ -1,4 +1,4 @@
-const nodemail = require('nodemailer');
+const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -17,7 +17,7 @@ dotenv.config();
  * }
  */
 
-const transporter=nodemail.createTransport({
+const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST||"smtp.gmail.com",
     port: parseInt(process.env.EMAIL_PORT)||587,
     secure: process.env.EMAIL_SECURE==="true",
@@ -41,11 +41,11 @@ const verifyEmailConnection= async ()=> {
 const sendEmail = async (options)=>{
     try {
         const mailOptions = {
-            from: `"${process.env.EMAIL_HOST}" <${process.env.EMAIL_FROM_ADDRESS}>`,
+            from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
             to: options.to,
             subject: options.subject,
-            text: options.text,
             html: options.html,
+            text: options.text,
         };
 
         const info=await transporter.sendMail(mailOptions);
