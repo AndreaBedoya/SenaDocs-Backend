@@ -70,3 +70,92 @@ paths:
                   token: { type: string, example: eyJhbGciOiJIUzI1NiIsInR5c... }
         '401':
           description: Credenciales inválidas.
+
+  /forgot-password:
+    post:
+      tags:
+        - Autenticación
+      summary: Solicita el restablecimiento de contraseña.
+      description: Envía un enlace de recuperación con un token de uso único al email del usuario, si existe.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ email ]
+              properties:
+                email: { type: string, format: email, example: usuario.a.recuperar@senadocs.co }
+      responses:
+        '200':
+          description: Mensaje de confirmación de envío (no revela si el email existe por seguridad).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: "Si el email existe, recibirás un enlace de recuperación." }
+        '500':
+          description: Error interno del servidor o falla en el envío del email.
+
+  /reset-password/{token}:
+    get:
+      tags:
+        - Autenticación
+      summary: Verifica la validez de un token de restablecimiento de contraseña.
+      description: Se usa cuando el usuario hace clic en el enlace del email.
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: El token generado por la solicitud de restablecimiento.
+      responses:
+        '200':
+          description: Token válido.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  email: { type: string, example: usuario.recuperado@senadocs.co }
+                  message: { type: string, example: "Token válido" }
+        '400':
+          description: Token inválido, expirado, o no encontrado.
+        '500':
+          description: Error al verificar el token.
+
+  /reset-password:
+    post:
+      tags:
+        - Autenticación
+      summary: Restablece la contraseña con un token válido.
+      description: Procesa el cambio final de contraseña si el token es correcto y no ha expirado.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ token, password, confirmPassword ]
+              properties:
+                token: { type: string, example: 'd385a81e9f4a1c5d6e2b3c4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b' }
+                password: { type: string, example: 'NuevaP4ssw0rd2026!' }
+                confirmPassword: { type: string, example: "NuevaClaveSegura123!" }
+      responses:
+        '200':
+          description: Contraseña restablecida con éxito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: "Contraseña actualizada con éxito." }
+        '400':
+          description: Token inválido, expirado o error de validación de contraseña.
+        '500':
+          description: Error interno al procesar el cambio.
