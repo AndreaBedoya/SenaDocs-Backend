@@ -50,19 +50,10 @@ module.exports = (sequelize) => {
             type: DataTypes.TEXT,
             allowNull: true,
         },
-        estado: {
-            type: DataTypes.ENUM("PENDIENTE", "APROBADO", "RECHAZADO", "REVISION"),
-            allowNull: false,
-            defaultValue: "PENDIENTE",
-        },
         publico: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
-        },
-        descargas: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
         },
         visitas: {
             type: DataTypes.INTEGER,
@@ -71,7 +62,7 @@ module.exports = (sequelize) => {
         usuario_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-        },
+        }
 
     }, {
         tableName: "DOCUMENTOS",

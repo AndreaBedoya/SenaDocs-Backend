@@ -35,8 +35,12 @@ module.exports = (sequelize) => {
             allowNull: false,
             unique: true,
         },
+        centro_formacion: {
+            type: DataTypes.STRING(140),
+            allowNull: false,
+        },
         ciudad: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.STRING(30),
             allowNull: false,
         },
         foto: {
