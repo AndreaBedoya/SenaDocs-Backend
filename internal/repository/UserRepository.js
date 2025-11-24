@@ -65,6 +65,21 @@ class UserRepository {
             where: { reset_password_token: token },
         });
     }
+
+    /**
+     * @description Actualiza un usuario en la base de datos por su ID.
+     * @param {number} id - ID del usuario a actualizar.
+     * @param {object} datos - Objeto con los campos a actualizar.
+     * @returns {Promise<[number, Array<Usuarios>]>} [número de filas afectadas, array de instancias actualizadas]
+     */
+    async update(id, datos) {
+        const result = await USUARIOS.update(datos, {
+            where: { id: id },
+            returning: true,
+        });
+
+        return result;
+    }
 }
 
 module.exports = new UserRepository();
