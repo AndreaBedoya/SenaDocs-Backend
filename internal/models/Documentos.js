@@ -13,56 +13,38 @@ module.exports = (sequelize) => {
             autoIncrement: true,
             allowNull: false,
         },
-        titulo: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
-        },
-        descripcion: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-        },
-        nombre_archivo: {
-            type: DataTypes.STRING(255),
-            allowNull: false,
-        },
-        ruta_archivo: {
-            type: DataTypes.STRING(500),
-            unique: true,
-            allowNull: false,
-        },
-        tipo_mime: {
-            type: DataTypes.STRING(100),
-            allowNull: false,
-        },
-        tamaño_bytes: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
-        palabras_clave: {
-            type: DataTypes.TEXT,
-            allowNull: true,
-        },
-        año_publicacion: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-        },
-        autores: {
-            type: DataTypes.TEXT,
-            allowNull: true,
-        },
-        publico: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-        },
-        visitas: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
-        },
         usuario_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-        }
+        },
+        ficha_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        tipo_documento: {
+            type: DataTypes.ENUM("JUICIO_EVALUATIVO", "NOVEDAD_ACADEMICA"),
+            allowNull: false,
+        },
+        nombre_original_archivo: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+        },
+        nombre_final_generado: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+        },
+        documento_aprendiz: {
+            type: DataTypes.STRING(30),
+            allowNull: true,
+        },
+        porcentaje_total: {
+            type: DataTypes.DECIMAL(5,2),
+            allowNull: true,
+        },
+        observaciones_log: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
 
     }, {
         tableName: "DOCUMENTOS",

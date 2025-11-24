@@ -6,9 +6,18 @@ const db = {};
 db.ROLES = require("./Roles")(sequelize);
 db.USUARIOS = require("./Usuarios")(sequelize);
 db.DOCUMENTOS = require("./Documentos")(sequelize);
-db.EVALUACIONES = require("./Evaluaciones")(sequelize);
 db.TRAZABILIDAD_SESIONES = require("./TrazabilidadSesiones")(sequelize);
-db.NOVEDADES_ACADEMICAS = require("./NovedadesAcademicas")(sequelize);
+db.FICHAS = require("./FICHAS")(sequelize);
+
+db.FICHAS.hasMany(db.DOCUMENTOS, {
+    foreignKey: "ficha_id",
+    as: "logsDeDocumentos",
+    onDelete: "CASCADE",
+});
+db.DOCUMENTOS.belongsTo(db.FICHAS, {
+    foreignKey: "ficha_id",
+    as: "fichaAsociada"
+})
 
 db.USUARIOS.belongsTo(db.ROLES, {
     foreignKey: "rol_id",
@@ -21,28 +30,11 @@ db.ROLES.hasMany(db.USUARIOS, {
 
 db.DOCUMENTOS.belongsTo(db.USUARIOS, {
     foreignKey: "usuario_id",
-    as: "autor",
+    as: "procesadoPor"
 });
 db.USUARIOS.hasMany(db.DOCUMENTOS, {
     foreignKey: "usuario_id",
-    as: "documentosSubidos",
-});
-db.EVALUACIONES.belongsTo(db.DOCUMENTOS, {
-    foreignKey: "documento_id",
-    as: "documentos",
-});
-db.DOCUMENTOS.hasMany(db.EVALUACIONES, {
-    foreignKey: "documento_id",
-    as: "evaluaciones",
-});
-
-db.EVALUACIONES.belongsTo(db.USUARIOS, {
-    foreignKey: "evaluador_id",
-    as: "evaluador",
-});
-db.USUARIOS.hasMany(db.EVALUACIONES, {
-    foreignKey: "evaluador_id",
-    as: "evaluacionesHechas",
+    as: "logsDeProcesos"
 });
 
 db.TRAZABILIDAD_SESIONES.belongsTo(db.USUARIOS, {
@@ -52,24 +44,6 @@ db.TRAZABILIDAD_SESIONES.belongsTo(db.USUARIOS, {
 db.USUARIOS.hasMany(db.TRAZABILIDAD_SESIONES, {
     foreignKey: "usuario_id",
     as: "historialAcceso",
-});
-
-db.NOVEDADES_ACADEMICAS.belongsTo(db.DOCUMENTOS, {
-    foreignKey: "documento_id",
-    as: "documentoRelacionado",
-});
-db.DOCUMENTOS.hasMany(db.NOVEDADES_ACADEMICAS, {
-    foreignKey: "documento_id",
-    as: "novedadesAcademicas",
-});
-
-db.NOVEDADES_ACADEMICAS.belongsTo(db.USUARIOS, {
-    foreignKey: "reportado_por_id",
-    as: "reportador",
-});
-db.USUARIOS.hasMany(db.NOVEDADES_ACADEMICAS, {
-    foreignKey: "reportado_por_id",
-    as: "novedadesReportes",
 });
 
 db.sequelize = sequelize;
