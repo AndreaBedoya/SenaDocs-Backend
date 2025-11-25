@@ -10,18 +10,16 @@ class AuthController {
                 email,
                 password,
                 documento,
+                centro_formacion,
                 ciudad,
                 telefono,
-                contacto_emergencia,
-                nombre_contacto,
-                tipo_sangre,
                 fecha_nacimiento,
                 cargo,
                 funciones_trabajo,
                 rol_id
             } = req.body;
 
-            if (!email || !password || !nombre || !documento || !rol_id || !apellido || !telefono || !ciudad || !cargo || !contacto_emergencia || !nombre_contacto || !fecha_nacimiento || !tipo_sangre || !funciones_trabajo) {
+            if (!email || !password || !nombre || !documento || !centro_formacion || !rol_id || !apellido || !telefono || !ciudad || !cargo || !fecha_nacimiento || !funciones_trabajo) {
                 return res.status(400).json({ succes: false, message: "Faltan campos obligatorios."});
             }
 
@@ -31,11 +29,9 @@ class AuthController {
                 email,
                 password,
                 documento,
+                centro_formacion,
                 ciudad,
                 telefono,
-                contacto_emergencia,
-                nombre_contacto,
-                tipo_sangre,
                 fecha_nacimiento,
                 cargo,
                 funciones_trabajo,
@@ -155,7 +151,7 @@ class AuthController {
             const { token, password } = req.body;
             const result = await authService.resetPassword(token, password);
             return res.status(200).json({
-                succes: false,
+                succes: true,
                 message: result.message
             });
         } catch (error) {

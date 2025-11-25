@@ -35,8 +35,12 @@ module.exports = (sequelize) => {
             allowNull: false,
             unique: true,
         },
+        centro_formacion: {
+            type: DataTypes.STRING(140),
+            allowNull: false,
+        },
         ciudad: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.STRING(30),
             allowNull: false,
         },
         foto: {
@@ -45,18 +49,6 @@ module.exports = (sequelize) => {
         },
         telefono: {
             type: DataTypes.STRING(20),
-            allowNull: false,
-        },
-        contacto_emergencia: {
-            type: DataTypes.STRING(20),
-            allowNull: false,
-        },
-        nombre_contacto: {
-            type: DataTypes.STRING(100),
-            allowNull: false,
-        },
-        tipo_sangre: {
-            type: DataTypes.STRING(10),
             allowNull: false,
         },
         fecha_nacimiento: {

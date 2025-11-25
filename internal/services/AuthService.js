@@ -12,11 +12,9 @@ class AuthService {
         email,
         password,
         documento,
+        centro_formacion,
         ciudad,
         telefono,
-        contacto_emergencia,
-        nombre_contacto,
-        tipo_sangre,
         fecha_nacimiento,
         cargo,
         funciones_trabajo,
@@ -38,11 +36,9 @@ class AuthService {
             email,
             password: hashedPassword,
             documento,
+            centro_formacion,
             ciudad,
             telefono,
-            contacto_emergencia,
-            nombre_contacto,
-            tipo_sangre,
             fecha_nacimiento,
             cargo,
             funciones_trabajo,
@@ -121,7 +117,7 @@ class AuthService {
             await EmailService.sendPasswordResetEmail(user, resetToken);
 
             return{
-                succes: true,
+                success: true,
                 message: "Si el email existe recibiras un enlace de recuperacion."
             };
 

@@ -27,11 +27,9 @@ paths:
                 email: { type: string, format: email, example: ana.perez@senadocs.co }
                 password: { type: string, example: P4$$w0rdSeguro2025 }
                 documento: { type: string, example: '1023456789' }
+                centro_formacion: {type: string, example: "Sena CGMLTI" }
                 ciudad: {type: string, example: "Bogota" }
                 telefono: { type: string, example: '3001234567' }
-                contacto_emergencia: { type: string, example: '3209876543' }
-                nombre_contacto: { type: string, example: Carlos Díaz }
-                tipo_sangre: { type: string, example: 'O+' }
                 fecha_nacimiento: { type: string, format: date, example: '1995-03-15' }
                 cargo: { type: string, example: "Funcionario" }
                 funciones_trabajo: { type: string, example: 'Análisis de datos.' }
