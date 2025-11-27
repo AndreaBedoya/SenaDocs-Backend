@@ -13,6 +13,26 @@ class UserRepository {
     }
 
     /**
+     * @param {object} nombre
+     * @returns {object}
+     */
+    async findByName(nombre) {
+        return USUARIOS.findOne({
+            where: {nombre: nombre}
+        });
+    }
+
+    /**
+     * @param {object} centroFormacion
+     * @returns {object}
+     */
+    async findByCentroFormacion(centroFormacion) {
+        return USUARIOS.findOne({
+            where: {centro_formacion: centroFormacion}
+        });
+    }
+
+    /**
      * Busca un usuario por email.
      * @param {object} email
      * @returns {object}
@@ -34,24 +54,12 @@ class UserRepository {
     }
 
     /**
-     * Actualiza contraseña.
-     * @param {object} userId
-     * @returns {string} newHashedPassword
-     */
-    async updatePassword(userId,newHashedPassword) {
-        return USUARIOS.update(
-            { password: newHashedPassword },
-            { where: { id: userId } }
-        );
-    }
-
-    /**
      * Busca por identificacion.
-     * @param {number} identificacion
+     * @param {number} documento
      */
-    async findByDocument(identificacion){
+    async findByDocument(documento){
         return USUARIOS.findOne({
-            where: { documento: identificacion },
+            where: { documento: documento },
         });
     }
 
@@ -64,6 +72,18 @@ class UserRepository {
         return USUARIOS.findOne({
             where: { reset_password_token: token },
         });
+    }
+
+    /**
+     * Actualiza contraseña.
+     * @param {object} userId
+     * @returns {string} newHashedPassword
+     */
+    async updatePassword(userId,newHashedPassword) {
+        return USUARIOS.update(
+            { password: newHashedPassword },
+            { where: { id: userId } }
+        );
     }
 
     /**

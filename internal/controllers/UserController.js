@@ -1,4 +1,4 @@
-const UsuarioService = require('../services/UsuarioService.js');
+const userService = require('../services/UserService.js');
 // Se agrega la importación del repositorio para el fallback (findById)
 const UserRepository = require('../repository/UserRepository.js');
 
@@ -13,7 +13,7 @@ const UsuarioController = {
 
         try {
             //Llamar al Servicio y almacenar el resultado completo
-            const resultadoUpdate = await UsuarioService.actualizarUsuario(userId, datosActualizar);
+            const resultadoUpdate = await userService.actualizarUsuario(userId, datosActualizar);
 
             // Verificación para manejar el TypeError: undefined is not iterable
             if (!Array.isArray(resultadoUpdate) || resultadoUpdate.length === 0) {
@@ -66,7 +66,74 @@ const UsuarioController = {
 
             return res.status(500).json({ message: "Error interno del servidor al actualizar el usuario." });
         }
-    }
+    },
+
+    async obtenerUsuarioPorNombre(req, res) {
+        try {
+            if (!req.nombre) {
+                throw new Error("campo de nombre vacio");
+            }
+            const resul = await userService.obtenerUsuarioPorNombre(req.nombre);
+            return res.status(200).json({success: true, message: "Usuario encontrado", ...resul});
+        } catch (error) {
+            console.error("Error al en ObtenerUsuarioPorNombre controlador:", error);
+            return res.status(500).json({message: "error de servidor"});
+        }
+
+    },
+
+    async obtenerUsuarioPorCentroFormacion(req, res) {
+        try {
+            if (!req.centroFormacion) {
+                throw new Error("campo de centro de formacion vacio");
+            }
+            const resul = await userService.obtenerUsuarioPorCentroFormacion()
+            return res.status(200).json({success: true, message: "Usuario encontrado", ...resul});
+        } catch (error) {
+            console.error("Error en obtenerUsuarioPorCentroFormacion controlador:", error);
+            return res.status(500).json({message: "error de servidor"});
+        }
+    },
+
+    async obtenerUsuarioPorEmail(req, res) {
+        try {
+            if (!req.email) {
+                throw new Error("campo de email vacio");
+            }
+            const resul = await userService.obtenerUsuarioPorEmail(req.email);
+            return res.status(200).json({success: true, message: "Usuario encontrado", ...resul});
+        } catch (error) {
+            console.error("Error en obtenerUsuarioPorEmail controlador:", error);
+            return res.status(500).json({message: "error de servidor"});
+        }
+    },
+
+    async buscarUsuarioPorId(req, res) {
+        try {
+            if (!req.id) {
+                throw new Error("Campo de ID vacio");
+            }
+            const result = userService.buscarUsuarioPorId();
+            return res.status(200).json({success: true, message: "usuario encontrado", ...result});
+
+        } catch (error) {
+            console.error("Error en buscarUsuarioPorId", error);
+            return res.status(500).json({success: false, message: "error de servidor", error});
+        }
+    },
+
+    async buscarUsuarioPorDocumento(req, res) {
+        try {
+            if (!req.documento) {
+                throw new Error ("Campo de documento vacio");
+            }
+            const result = userService.obtenerUsuarioPorDocumento(req.documento);
+            return res.status(200).json({ success: true, message: "Usuario encontrado", ...result });
+        } catch (error) {
+            console.error("error en obtenerUsuarioPorDocumento controlador", error);
+            return res.status(500).json({ success: false, message: "Error de servidor", error});
+        }
+    } ,
 };
 
 module.exports = UsuarioController;
