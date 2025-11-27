@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 4000;
 const swaggerDocument = YAML.load("./swagger.yaml");
 const { connectDB } = require("./config/Database");
 const authRoutes = require("./internal/routes/AuthRoutes");
+const documentRoutes = require("./internal/routes/DocumentRoutes");
 
 // CORS CONFIG
 app.use(cors({
@@ -34,6 +35,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/documents", documentRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {

@@ -2,6 +2,7 @@
 
 const { Sequelize } = require("sequelize");
 const dotenv = require("dotenv");
+const initRoles = require('../internal/init/initRoles.js');
 
 dotenv.config();
 
@@ -26,8 +27,10 @@ const connectDB = async () => {
 
         // Sincroniza los modelos. USAMOS force: false para no borrar los modelos en cada arranque.
         // Los modelos deben cargarse en el Index.js ANTES de este paso.
-        await sequelize.sync({ force: false });
+        await sequelize.sync({ force: true });
         console.log('Modelos de BD sincronizados. Tablas creadas.');
+        await initRoles(sequelize);
+        console.log('Roles de BD sincronizados xD.');
     } catch (error) {
         console.error('Error al conectar o sincronizar la BD:', error.message);
         process.exit(1);
