@@ -7,7 +7,7 @@ const {verifyEmailConnection} = require("./internal/utils/EmailUtils");
 const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const usuarioRoutes = require("./internal/routes/Usuario.js");
+const usuarioRoutes = require("./internal/routes/UserRoutes.js");
 
 dotenv.config();
 

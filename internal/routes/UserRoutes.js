@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const usuarioController = require('../controllers/UserController.js');
+const userController = require('../controllers/UserController.js');
 const verificarToken = require('../middlewares/VerificarTokenMiddleware.js');
 const autorizarRoles = require('../middlewares/AutorizarRolesMiddleware.js');
 
 // Actualizar usuario(Perfil/Admin)
-router.put('/perfil/:id', verificarToken, autorizarRoles(['ADMIN']), usuarioController.actualizarUsuario);
+router.put('/perfil/:id', verificarToken, autorizarRoles(['ADMIN']), userController.actualizarUsuario);
+
+router.get("/user/:nombre", userController.obtenerUsuarioPorNombre);
 
 module.exports = router;
