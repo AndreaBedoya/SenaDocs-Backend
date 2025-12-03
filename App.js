@@ -8,6 +8,7 @@ const swaggerUi = require("swagger-ui-express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const usuarioRoutes = require("./internal/routes/UserRoutes.js");
+const path = require("path");
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ const swaggerDocument = YAML.load("./swagger.yaml");
 const { connectDB } = require("./config/Database");
 const authRoutes = require("./internal/routes/AuthRoutes");
 const documentRoutes = require("./internal/routes/DocumentRoutes");
+const juicioEvaluativoRoutes = require("./internal/routes/juicioEvaluativoRoutes")
 
 // CORS CONFIG
 app.use(cors({
@@ -32,10 +34,14 @@ app.use(express.json());
 // Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+// Acceso a los archivos subidos
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/documents", documentRoutes);
+app.use("/api/juicios-evaluativos", juicioEvaluativoRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {
