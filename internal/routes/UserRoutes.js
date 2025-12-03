@@ -9,4 +9,6 @@ router.put('/perfil/:id', verificarToken, autorizarRoles(['ADMIN']), userControl
 
 router.get("/user/:nombre", userController.obtenerUsuarioPorNombre);
 
+router.get("/me/:id", verificarToken, userController.obtenerUsuarioPorId);
+
 module.exports = router;

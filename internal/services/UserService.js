@@ -43,7 +43,19 @@ const UserService = {
         if (!id) {
             throw new Error(`Tiene que llenar el campo de id.`);
         }
-        return await userRepository.findById(id);
+        const user= await userRepository.findById(id)
+        userResponse = {
+            id: user.id,
+            email: user.email,
+            nombre: `${user.nombre} ${user.apellido}`,
+            telefono: user.telefono,
+            ciudad: user.ciudad,
+            centro_formacion: user.centro_formacion,
+            documento: user.documento,
+            fecha_nacimiento: user.fecha_nacimiento
+        }
+        console.log(userResponse);
+        return userResponse;
     },
 
     async obtenerUsuarioPorDocumento(documento) {

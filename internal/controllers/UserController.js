@@ -108,12 +108,12 @@ const UsuarioController = {
         }
     },
 
-    async buscarUsuarioPorId(req, res) {
+    async obtenerUsuarioPorId(req, res) {
         try {
-            if (!req.id) {
+            if (!req.params.id) {
                 throw new Error("Campo de ID vacio");
             }
-            const result = userService.buscarUsuarioPorId();
+            const result = await userService.obtenerUsuarioPorId(req.params.id);
             return res.status(200).json({success: true, message: "usuario encontrado", ...result});
 
         } catch (error) {
