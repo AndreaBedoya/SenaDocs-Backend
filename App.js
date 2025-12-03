@@ -34,7 +34,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Rutas
 app.use("/api/auth", authRoutes);
-app.use("/api/usuarios", usuarioRoutes);
+app.use("/api", usuarioRoutes);
 app.use("/api/documents", documentRoutes);
 
 // Ruta base

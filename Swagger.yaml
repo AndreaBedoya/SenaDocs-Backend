@@ -168,41 +168,40 @@ paths:
         '500':
           description: Error interno al procesar el cambio.
 
-  /documents/renombrar-descargar:
-    post:
+  /user/{nombre}:
+    get:
       tags:
-        - Documentos
-      summary: Renombrar PDFs y descargar un archivo ZIP organizado por Ficha.
-      description: Sube uno o varios archivos PDF y los renombra según la nomenclatura (Documento_NombreCompleto_Ficha). Crea un ZIP con subcarpetas para separar los archivos de distintas fichas.
-      consumes:
-        - multipart/form-data # ¡Importante! Indica que la petición lleva archivos.
+        - Usuarios
+      summary: Buscar un usuario por nombre completo.
+      description: Permite obtener la información de un usuario específico buscando por su nombre completo.
+      security: # Asumiendo que esta es una ruta protegida
+        - bearerAuth: [ ]
       parameters:
-        - in: formData
-          name: nombreCarpeta
+        - in: path # Usa 'path' porque está en la URL, no como query parameter
+          name: nombre
           type: string
           required: true
-          description:
-            Nombre de la carpeta principal del ZIP (ej: Certificaciones).
-        - in: formData
-          name: fichaAsignada
-          type: string
-          required: false
-          description: Código de ficha a asignar a TODOS los archivos si la ficha no se encuentra en el PDF. (Solo requerido si el PDF no tiene ficha).
-        - in: formData
-          name: documentos
-          type: file # Define que este parámetro es un archivo
-          required: true
-          description: Lista de archivos PDF a renombrar y procesar.
-          collectionFormat: multi # Indica que se esperan múltiples archivos
+          description: Nombre completo del usuario a buscar (debe ser exacto).
       responses:
         '200':
-          description: Archivo ZIP generado y descargado con éxito.
-          content:
-            application/zip:
-              schema:
+          description: Información del usuario encontrado.
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              nombre:
                 type: string
-                format: binary
+              email:
+                type: string
+              rol_id:
+                type: integer
+
         '400':
-          description: Faltan archivos o el nombre de la carpeta / La lógica de extracción falló.
+          description: El campo 'nombre' está vacío.
+        '401':
+          description: Acceso no autorizado (token faltante o inválido).
+        '404':
+          description: Usuario no encontrado con ese nombre.
         '500':
-          description: Error interno del servidor o error en la compresión ZIP.
+          description: Error interno del servidor.

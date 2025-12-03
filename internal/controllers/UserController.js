@@ -76,7 +76,7 @@ const UsuarioController = {
             const resul = await userService.obtenerUsuarioPorNombre(req.nombre);
             return res.status(200).json({success: true, message: "Usuario encontrado", ...resul});
         } catch (error) {
-            console.error("Error al en ObtenerUsuarioPorNombre controlador:", error);
+            console.log("Error al en ObtenerUsuarioPorNombre controlador:", error);
             return res.status(500).json({message: "error de servidor"});
         }
 
