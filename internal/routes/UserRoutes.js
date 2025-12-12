@@ -11,4 +11,6 @@ router.get("/user/:nombre", userController.obtenerUsuarioPorNombre);
 
 router.get("/me/:id", verificarToken, userController.obtenerUsuarioPorId);
 
+router.get("/perfil", verificarToken, userController.obtenerMiPerfil);
+
 module.exports = router;

@@ -17,7 +17,8 @@ class AuthService {
     fecha_nacimiento,
     cargo,
     funciones_trabajo,
-    rol_id
+    rol_id,
+    foto
   }) {
     if (await UserRepository.findByEmail(email)) {
       throw new Error("El email ya está registrado");
@@ -41,7 +42,8 @@ class AuthService {
       fecha_nacimiento,
       cargo,
       funciones_trabajo,
-      rol_id
+      rol_id,
+      foto
     };
 
     const newUser = await UserRepository.create(userData);
@@ -50,7 +52,17 @@ class AuthService {
       user: {
         id: newUser.id,
         nombre: newUser.nombre,
+        apellido: newUser.apellido,
+        documento: newUser.documento,
+        email: newUser.email,
+        ciudad: newUser.ciudad,
+        telefono: newUser.telefono,
+        cargo: newUser.cargo,
+        funciones_trabajo: newUser.funciones_trabajo,
+        centro_formacion: newUser.centro_formacion,
+        fecha_nacimiento: newUser.fecha_nacimiento,
         rol_id: newUser.rol_id,
+        foto: newUser.foto
       }
     };
   }
@@ -77,7 +89,17 @@ class AuthService {
       user: {
         id: user.id,
         nombre: user.nombre,
+        apellido: user.apellido,
+        documento: user.documento,
+        email: user.email,
+        ciudad: user.ciudad,
+        telefono: user.telefono,
+        cargo: user.cargo,
+        funciones_trabajo: user.funciones_trabajo,
+        centro_formacion: user.centro_formacion,
+        fecha_nacimiento: user.fecha_nacimiento,
         rol_id: user.rol_id,
+        foto: user.foto
       }
     };
   }
@@ -186,5 +208,4 @@ class AuthService {
   }
 }
 
-// Exportación correcta fuera de la clase
 module.exports = new AuthService();
