@@ -70,7 +70,7 @@ async function procesarExcel(rutaExcel) {
 
         if (nombreLimpio === "" && apellidoLimpio === "") return;
 
-        // ✔ Crear aprendiz si no existe
+        // Crear aprendiz si no existe
         if (!aprendicesAgrupados[docStr]) {
             aprendicesAgrupados[docStr] = {
                 documento: docStr,

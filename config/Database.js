@@ -27,7 +27,7 @@ const connectDB = async () => {
 
         // Sincroniza los modelos. USAMOS force: false para no borrar los modelos en cada arranque.
         // Los modelos deben cargarse en el Index.js ANTES de este paso.
-        await sequelize.sync({ force: true });
+        await sequelize.sync({ force: false });
         console.log('Modelos de BD sincronizados. Tablas creadas.');
         await initRoles(sequelize);
         console.log('Roles de BD sincronizados xD.');

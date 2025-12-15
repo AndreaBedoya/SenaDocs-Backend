@@ -15,7 +15,6 @@ for (const aprendiz of procesarExcel) {
 `;
 }
 
-
 contenido = `
     <body>
         <h1>Prueba de pdf</h1>
