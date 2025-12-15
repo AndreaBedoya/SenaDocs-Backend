@@ -1,5 +1,5 @@
 const { procesarExcel } = require("../services/excelReader");
-
+const cache = new Map();
 
 async function uploadJuicios(req, res) {
     try {
@@ -8,11 +8,17 @@ async function uploadJuicios(req, res) {
         }
 
         const rutaArchivo = req.file.path;
-        const resumen = await procesarExcel(rutaArchivo);
+
+        const data = await procesarExcel(rutaArchivo);
+
+        const archivoId = `upload_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+        cache.set(archivoId, data);
 
         return res.json({
             msg: "Archivo procesado correctamente",
-            resumen
+            archivoId: archivoId,
+            resumen: data.resumenGlobal
         });
     } catch (error) {
         console.error("Error procesando Excel:", error);
@@ -21,5 +27,6 @@ async function uploadJuicios(req, res) {
 }
 
 module.exports = {
-    uploadJuicios
+    uploadJuicios,
+    cache
 };

@@ -15,6 +15,19 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  schemas:
+    ResumenAprendiz:
+      type: object
+      properties:
+        documento: { type: string, example: '1023456789' }
+        nombre: { type: string, example: Ana Pérez }
+        ficha: { type: string, example: '2547050' }
+        juicios: { type: integer, example: 10 }
+        juiciosAprobados: { type: integer, example: 7 }
+        juiciosPorEvaluar: { type: integer, example: 3 }
+        porcentajeJuiciosEvaluados: { type: string, example: '70%' }
+        porcentajeJuiciosPorEvaluar: { type: string, example: '30%' }
+
 security:
   - bearerAuth: []
 
@@ -206,3 +219,98 @@ paths:
           description: Faltan archivos o el nombre de la carpeta / La lógica de extracción falló.
         '500':
           description: Error interno del servidor o error en la compresión ZIP.
+
+  /juicios-evaluativos/upload-juicios:
+    post:
+      tags:
+        - Juicios Evaluativos
+      summary: Procesa un archivo Excel de juicios y retorna el resumen.
+      description: Sube un archivo Excel para analizar los juicios de los aprendices. El servidor devuelve un resumen y un ID de archivo (`archivoId`) para generar reportes posteriores.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [ archivo ]
+              properties:
+                archivo:
+                  type: string
+                  format: binary
+                  description: Archivo Excel con el formato de Juicios Evaluativos.
+      responses:
+        '200':
+          description: Archivo procesado con éxito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg: { type: string, example: "Archivo procesado correctamente" }
+                  archivoId: { type: string, example: "upload_1678886400000_abcde12" }
+                  resumen:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResumenAprendiz'
+        '400':
+          description: No se recibió ningún archivo.
+        '500':
+          description: Error interno al procesar el archivo.
+
+  /juicios-evaluativos/reporte/individual/{archivoId}/{documento}:
+      get:
+        tags:
+          - Juicios Evaluativos
+        summary: Genera el reporte PDF detallado de un aprendiz.
+        description: Usa el ID de la carga y el documento del aprendiz para generar un PDF detallado de todos sus juicios.
+        parameters:
+          - name: archivoId
+            in: path
+            required: true
+            schema:
+              type: string
+            description: ID único retornado por `/juicios/upload-juicios`.
+          - name: documento
+            in: path
+            required: true
+            schema:
+              type: string
+            description: Número de documento del aprendiz para el cual se requiere el reporte.
+        responses:
+          '200':
+            description: Reporte PDF generado y listo para descargar.
+            content:
+              application/pdf:
+                schema:
+                  type: string
+                  format: binary
+          '404':
+            description: ID de archivo o Documento no encontrado.
+          '500':
+            description: Error al generar el PDF.
+
+  /juicios-evaluativos/reporte/elegibles/{archivoId}:
+      get:
+        tags:
+          - Juicios Evaluativos
+        summary: Genera el reporte PDF de aprendices elegibles (>= 75% aprobado).
+        description: Utiliza el ID de la carga para filtrar y generar un PDF con la lista de aprendices que cumplen con el 75% o más de juicios aprobados.
+        parameters:
+          - name: archivoId
+            in: path
+            required: true
+            schema:
+              type: string
+            description: ID único retornado por `/juicios/upload-juicios`.
+        responses:
+          '200':
+            description: Reporte PDF de elegibles generado y listo para descargar.
+            content:
+              application/pdf:
+                schema:
+                  type: string
+                  format: binary
+          '404':
+            description: ID de archivo no encontrado o sesión expirada.
+          '500':
+            description: Error al generar el PDF.
