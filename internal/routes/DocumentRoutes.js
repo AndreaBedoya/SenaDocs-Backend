@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const { verifyToken } = require("../utils/JwtUtils");
+const { authMiddleware } = require("../middlewares/AuthMiddleware");
 const uploadFiles = require("../../config/MulterConfig");
 const documentController = require("../controllers/DocumentController");
 
 router.post(
     "/renombrar-descargar",
-    verifyToken,
+    authMiddleware,
     uploadFiles,
     documentController.renombrarDescargar
 );

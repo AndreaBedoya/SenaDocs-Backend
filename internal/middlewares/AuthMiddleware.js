@@ -1,6 +1,6 @@
 const { verifyToken, extractTokenFromHeader } = require('../utils/JwtUtils.js')
-const AuthService = require('../services/AuthService')
-const child_process = require("node:child_process");
+const db = require('../models');
+const { USUARIOS } = db;
 
 const authMiddleware = async (req, res, next) => {
     try {
@@ -18,8 +18,21 @@ const authMiddleware = async (req, res, next) => {
         //verificar token
         const decoded = verifyToken(token);
 
-        //Obtener usuario de la base de datos
-        const user = await AuthService.verifyUserToken(token);
+        //Obtener usuario de la base de datos con su rol incluido
+        const user = await USUARIOS.findByPk(decoded.id, {
+            include: [{
+                model: db.ROLES,
+                as: 'rol',
+                required: false
+            }]
+        });
+        
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Usuario no encontrado.',
+            });
+        }
 
         //Agregar usuario al objeto request
         req.user = {
@@ -27,8 +40,8 @@ const authMiddleware = async (req, res, next) => {
             email: user.email,
             nombre: user.nombre,
             apellido: user.apellido,
-            role: user.role.nombre,
-            role_id: user.role.id,
+            role: user.rol ? user.rol.nombre : null,
+            role_id: user.rol_id,
         };
 
         //continuar con la siguiente funcion
@@ -36,10 +49,10 @@ const authMiddleware = async (req, res, next) => {
     } catch (error) {
         console.log('Error en authMiddleware', error.message);
 
-        if ( error.message === 'Token invalid.' ) {
+        if (error.message === 'Token expirado' || error.message === 'Token invalido') {
             return res.status(401).json({
                 success: false,
-                message: 'No token provided, access denied.',
+                message: 'Token inválido o expirado.',
                 code: 'TOKEN_INVALID'
             });
         }
