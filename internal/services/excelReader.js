@@ -70,13 +70,13 @@ async function procesarExcel(rutaExcel) {
 
         if (nombreLimpio === "" && apellidoLimpio === "") return;
 
-        // ✔ Crear aprendiz si no existe
+        // Crear aprendiz si no existe
         if (!aprendicesAgrupados[docStr]) {
             aprendicesAgrupados[docStr] = {
                 documento: docStr,
                 nombre: nombreLimpio,
                 apellido: apellidoLimpio,
-                juicios: []
+                juicios: [] // Almacena el detalle de juicios
             };
         }
 
@@ -89,7 +89,6 @@ async function procesarExcel(rutaExcel) {
     });
 
     const lista = Object.values(aprendicesAgrupados);
-    console.log(aprendicesAgrupados.length);
     const resumen = [];
 
     lista.forEach(aprendiz => {
@@ -112,17 +111,21 @@ async function procesarExcel(rutaExcel) {
         item.juiciosAprobados = aprobados;
         item.juiciosPorEvaluar = porEvaluar;
 
+        // Evitar división por cero
         item.porcentajeJuiciosEvaluados =
-            Math.round((aprobados / item.juicios) * 100) + "%";
+            item.juicios > 0 ? (Math.round((aprobados / item.juicios) * 100) + "%") : "0%";
 
         item.porcentajeJuiciosPorEvaluar =
-            Math.round((porEvaluar / item.juicios) * 100) + "%";
+            item.juicios > 0 ? (Math.round((porEvaluar / item.juicios) * 100) + "%") : "0%";
 
         resumen.push(item);
     });
-    console.log(resumen.length);
 
-    return resumen;
+    return {
+        ficha: ficha,
+        resumenGlobal: resumen,
+        aprendicesDetalle: lista
+    };
 }
 
 module.exports = {

@@ -1,11 +1,16 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const { uploadJuicios } = require("../controllers/juicioEvaluativoController");
 const fs = require("fs");
 
-const router = express.Router();
+const { uploadJuicios } = require("../controllers/JuicioEvaluativoController");
+const {
+    verificarCarga,
+    generarReporteIndividual,
+    generarReporteElegibles
+} = require("../controllers/reporteController");
 
+const router = express.Router();
 
 const uploadDir = path.join(__dirname, "..", "uploads");
 
@@ -17,7 +22,7 @@ if (!fs.existsSync(uploadDir)) {
 // Configuración de multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, uploadDir);  // ← usar la ruta absoluta
+        cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -27,5 +32,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post("/upload-juicios", upload.single("archivo"), uploadJuicios);
+
+router.get(
+    "/reporte/individual/:archivoId/:documento",
+    verificarCarga,
+    generarReporteIndividual
+);
+
+router.get(
+    "/reporte/elegibles/:archivoId",
+    verificarCarga,
+    generarReporteElegibles
+);
 
 module.exports = router;
