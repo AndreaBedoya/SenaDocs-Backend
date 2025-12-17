@@ -13,4 +13,6 @@ router.get("/me/:id", verificarToken, userController.obtenerUsuarioPorId);
 
 router.get("/perfil", verificarToken, userController.obtenerMiPerfil);
 
+router.put('/perfil/documento/:documento', userController.actualizarUsuarioPorDocumento);
+
 module.exports = router;
