@@ -77,6 +77,35 @@ function extractMetadataFromFilename(filename) {
     const nameWithoutExt = normalizedFilename.replace(/\.pdf$/i, '');
     console.log(`Nombre sin extensión (normalizado): ${nameWithoutExt}`);
 
+    const noDocumentoMatch = nameWithoutExt.match(/^NO[_\s]*DOCUMENTO[_\s]+(.+)[_\s]+(\d{6,10})$/i);
+    if (noDocumentoMatch) {
+        console.log('Archivo con formato NO_DOCUMENTO detectado');
+        data.documento = null; // No hay documento numérico
+        data.fichaPDF = noDocumentoMatch[2];
+        let nombreRaw = noDocumentoMatch[1].trim();
+        
+        console.log(`Nombre raw extraído de NO_DOCUMENTO: "${nombreRaw}"`);
+
+        let cleanName = nombreRaw
+            .replace(/[_\s]+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .toUpperCase();
+        
+        // Limpiar palabras comunes que puedan aparecer
+        cleanName = cleanName.replace(/\b(DOCUMENTOS?|CERTIFICADOS?|EVIDENCIAS?|ARCHIVOS?|PDFS?)\b/gi, '').trim();
+        cleanName = cleanName.replace(/[_\s]+/g, '_').replace(/^_+|_+$/g, '');
+        
+        if (cleanName.length > 3) {
+            data.nombreCompleto = cleanName;
+            console.log(`Nombre extraído de NO_DOCUMENTO: ${data.nombreCompleto}`);
+            console.log(`Ficha extraída: ${data.fichaPDF}`);
+            console.log('Metadatos finales del nombre del archivo:', data);
+            return data;
+        } else {
+            console.log(`Nombre extraído muy corto: "${cleanName}" (longitud: ${cleanName.length})`);
+        }
+    }
+
     // Buscar documento
     let docMatch = nameWithoutExt.match(/^(\d{8,12})/);
     if (docMatch) {
@@ -93,12 +122,23 @@ function extractMetadataFromFilename(filename) {
     }
 
     // Buscar ficha
-    let fichaMatch = nameWithoutExt.match(/(\d{6,8})(?:\s*\.pdf)?$/i);
+    let fichaMatch = nameWithoutExt.match(/(\d{6,7})(?:\s*\.pdf)?$/i);
     if (fichaMatch) {
-        data.fichaPDF = fichaMatch[1];
-        console.log(`Ficha encontrada (al final): ${data.fichaPDF}`);
+        // Verificar que no sea el mismo que el documento
+        if (fichaMatch[1] !== data.documento) {
+            data.fichaPDF = fichaMatch[1];
+            console.log(`Ficha encontrada (al final): ${data.fichaPDF}`);
+        } else {
+            console.log('Número al final coincide con el documento, no es ficha');
+            // Buscar otra ficha en cualquier parte
+            fichaMatch = nameWithoutExt.match(/(\d{6,10})/);
+            if (fichaMatch && fichaMatch[1] !== data.documento) {
+                data.fichaPDF = fichaMatch[1];
+                console.log(`Ficha encontrada (en cualquier parte): ${data.fichaPDF}`);
+            }
+        }
     } else {
-        fichaMatch = nameWithoutExt.match(/(\d{6,8})/);
+        fichaMatch = nameWithoutExt.match(/(\d{6,10})/);
         if (fichaMatch) {
             // Verificar que no sea el mismo que el documento
             if (fichaMatch[1] !== data.documento) {
@@ -205,27 +245,76 @@ function extractMetadata(pdfText) {
     };
 
     // Buscar documento de múltiples formas
-    let docMatch = pdfText.match(/identificado\s+con\s+(?:número\s+de\s+)?(?:identificación|documento)[:\s]+(\d{8,12})/i);
+    let docMatch = null;
+
+    docMatch = pdfText.match(/identificado\s+con\s+(?:número\s+de\s+)?(?:identificación|documento)[:\s]+(\d{8,12})/i);
     if (docMatch) {
         data.documento = docMatch[1];
         console.log(`Documento encontrado (patrón 1): ${data.documento}`);
     } else {
-        docMatch = pdfText.match(/NUIP\s+(\d{1,3}\.?\d{1,3}\.?\d{1,3}\.?\d{1,3})/i);
+        docMatch = pdfText.match(/NUIP[:\s]+(\d{1,3}\.?\d{1,3}\.?\d{1,3}\.?\d{1,3})/i);
         if (docMatch) {
             data.documento = docMatch[1].replace(/\./g, '');
             console.log(`Documento encontrado (patrón NUIP con puntos): ${data.documento}`);
         } else {
-            docMatch = pdfText.match(/(?:Cédula\s+de\s+Ciudadanía|Documento|Cédula|Tarjeta|NÚMERO DE DOCUMENTO|NÚMERO DE IDENTIFICACIÓN)[:\s]+(\d{8,12})/i);
+            docMatch = pdfText.match(/(?:Cédula\s+de\s+Ciudadanía\s+No\.?|Cédula\s+No\.?|Documento|Cédula|Tarjeta\s+de\s+Identidad|NÚMERO\s+DE\s+DOCUMENTO|NÚMERO\s+DE\s+IDENTIFICACIÓN)[:\s]+(\d{8,12})/i);
             if (docMatch) {
                 data.documento = docMatch[1];
                 console.log(`Documento encontrado (patrón 3): ${data.documento}`);
             } else {
-                docMatch = pdfText.match(/(?:CC|TI|NUIP|documento)[:\s]+(\d{8,12})/i);
+                docMatch = pdfText.match(/(?:CC|TI|NUIP|documento|DOCUMENTO)[:\s]+(\d{8,12})/i);
                 if (docMatch) {
                     data.documento = docMatch[1];
                     console.log(`Documento encontrado (patrón 4): ${data.documento}`);
                 } else {
-                    console.log('No se encontró documento en el contenido del PDF');
+                    docMatch = pdfText.match(/(?:número|numero|N°|Nº|No\.?)[:\s]*(?:de\s+)?(?:documento|identificación|identificacion)[:\s]+(\d{8,12})/i);
+                    if (docMatch) {
+                        data.documento = docMatch[1];
+                        console.log(`Documento encontrado (patrón 5): ${data.documento}`);
+                    } else {
+                        docMatch = pdfText.match(/(?:documento|identificación|identificacion|cédula|cedula|CC|TI)[:\s]+(\d{1,3}\.?\d{1,3}\.?\d{1,3}\.?\d{1,3})/i);
+                        if (docMatch) {
+                            data.documento = docMatch[1].replace(/\./g, '');
+                            console.log(`Documento encontrado (patrón 6 - con puntos): ${data.documento}`);
+                        } else {
+                            docMatch = pdfText.match(/(?:documento|identificación|identificacion|cédula|cedula|CC|TI|NUIP)[^0-9]{0,50}(\d{8,12})/i);
+                            if (docMatch) {
+                                data.documento = docMatch[1];
+                                console.log(`Documento encontrado (patrón 7 - cerca de palabra clave): ${data.documento}`);
+                            } else {
+                                docMatch = pdfText.match(/(?:identificado|identificada)[^0-9]{0,50}(\d{8,12})/i);
+                                if (docMatch) {
+                                    data.documento = docMatch[1];
+                                    console.log(`Documento encontrado (patrón 8 - después de identificado): ${data.documento}`);
+                                } else {
+                                    const allNumbers = pdfText.match(/\b(\d{8,12})\b/g);
+                                    if (allNumbers) {
+                                        // Filtrar números que probablemente sean documentos
+                                        for (const num of allNumbers) {
+                                            const numStr = num.replace(/\D/g, '');
+                                            if (numStr.length >= 8 && numStr.length <= 12) {
+                                                // Verificar contexto alrededor del número
+                                                const numIndex = pdfText.indexOf(num);
+                                                const context = pdfText.substring(Math.max(0, numIndex - 50), Math.min(pdfText.length, numIndex + 50));
+                                                const contextLower = context.toLowerCase();
+                                                
+                                                // Si está cerca de palabras relacionadas con documento, es probable que sea un documento
+                                                if (/documento|identificación|identificacion|cédula|cedula|cc|ti|nuip|identificado/i.test(contextLower)) {
+                                                    data.documento = numStr;
+                                                    console.log(`Documento encontrado (patrón 9 - búsqueda contextual): ${data.documento}`);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    if (!data.documento) {
+                                        console.log('No se encontró documento en el contenido del PDF después de intentar todos los patrones');
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -281,33 +370,39 @@ function extractMetadata(pdfText) {
         }
     }
 
-    // Buscar ficha de múltiples formas
-    let fichaMatch = pdfText.match(/ficha\s+(?:número|N°|Nº|numero|No\.?)\s+(\d{6,8})/i);
+    // Buscar ficha
+    let fichaMatch = pdfText.match(/ficha\s+(?:número|N°|Nº|numero|No\.?)\s+(\d{6,7})/i);
     if (fichaMatch) {
         data.fichaPDF = fichaMatch[1];
         console.log(`Ficha encontrada (patrón 1 - "ficha número"): ${data.fichaPDF}`);
     } else {
-        fichaMatch = pdfText.match(/perteneciente[^,]*ficha\s+(?:número|N°|Nº|numero|No\.?)?\s*(\d{6,8})/i);
+        fichaMatch = pdfText.match(/perteneciente[^,]*ficha\s+(?:número|N°|Nº|numero|No\.?)?\s*(\d{6,10})/i);
         if (fichaMatch) {
             data.fichaPDF = fichaMatch[1];
             console.log(`Ficha encontrada (patrón 2 - "perteneciente...ficha"): ${data.fichaPDF}`);
         } else {
-            fichaMatch = pdfText.match(/ficha[:\s]+(\d{6,8})/i);
+            fichaMatch = pdfText.match(/ficha[:\s]+(\d{6,10})/i);
             if (fichaMatch) {
                 data.fichaPDF = fichaMatch[1];
                 console.log(`Ficha encontrada (patrón 3 - "ficha:"): ${data.fichaPDF}`);
             } else {
-                fichaMatch = pdfText.match(/de\s+la\s+ficha[:\s]+(\d{6,8})/i);
+                fichaMatch = pdfText.match(/de\s+la\s+ficha[:\s]+(\d{6,10})/i);
                 if (fichaMatch) {
                     data.fichaPDF = fichaMatch[1];
                     console.log(`Ficha encontrada (patrón 4 - "de la ficha"): ${data.fichaPDF}`);
                 } else {
-                    fichaMatch = pdfText.match(/ficha[:\s]*(\d{6,8})(?:[,\s\.]|$)/i);
+                    fichaMatch = pdfText.match(/ficha[:\s]*(\d{6,10})(?:[,\s\.]|$)/i);
                     if (fichaMatch) {
                         data.fichaPDF = fichaMatch[1];
                         console.log(`Ficha encontrada (patrón 5 - "ficha" con puntuación): ${data.fichaPDF}`);
                     } else {
-                        console.log('No se encontró ficha en el contenido del PDF');
+                        fichaMatch = pdfText.match(/ficha[^0-9]{0,30}(\d{6,10})/i);
+                        if (fichaMatch) {
+                            data.fichaPDF = fichaMatch[1];
+                            console.log(`Ficha encontrada (patrón 6 - cerca de "ficha"): ${data.fichaPDF}`);
+                        } else {
+                            console.log('No se encontró ficha en el contenido del PDF');
+                        }
                     }
                 }
             }
@@ -375,11 +470,30 @@ async function processPdfForRenaming(fileBuffer, fichaAsignada) {
             
             console.log(`PDF leído exitosamente. Longitud del texto: ${text.length} caracteres`);
             // Log para debugging
-            console.log(`Texto extraído (primeros 500 caracteres):`, text.substring(0, 500));
+            console.log(`Texto extraído (primeros 1000 caracteres):`, text.substring(0, 1000));
+
+            text = text.replace(/\s+/g, ' ').trim();
 
             // Extraer metadatos del contenido del PDF
             metadata = extractMetadata(text);
             console.log('Metadatos extraídos del contenido del PDF:', metadata);
+            
+            // Si no se encontró documento
+            if (!metadata.documento) {
+                console.warn('No se encontró documento en el PDF. Buscando números de 8-12 dígitos en el texto...');
+                const allLongNumbers = text.match(/\b\d{8,12}\b/g);
+                if (allLongNumbers) {
+                    console.log(`Números de 8-12 dígitos encontrados en el PDF:`, allLongNumbers);
+                    // Mostrar contexto alrededor de cada número
+                    allLongNumbers.forEach((num, idx) => {
+                        const numIndex = text.indexOf(num);
+                        if (numIndex >= 0) {
+                            const context = text.substring(Math.max(0, numIndex - 100), Math.min(text.length, numIndex + 100));
+                            console.log(`  Número ${idx + 1} (${num}): ...${context}...`);
+                        }
+                    });
+                }
+            }
 
             if (metadata.fichaPDF) {
                 console.log(`FICHA ENCONTRADA EN EL PDF: ${metadata.fichaPDF} (esta tiene prioridad sobre la del nombre del archivo)`);
@@ -409,8 +523,8 @@ async function processPdfForRenaming(fileBuffer, fichaAsignada) {
             
             console.log('Metadata después de extraer del nombre del archivo:', metadata);
 
-            if (!metadata.documento && !metadata.fichaPDF && !fichaAsignada) {
-                throw new Error(`No se pudo leer el contenido del PDF ${fileBuffer.originalname} y el nombre del archivo no contiene suficiente información. Proporciona "fichaAsignada" o asegúrate de que el nombre del archivo incluya documento y ficha.`);
+            if (!metadata.fichaPDF && !fichaAsignada && !metadata.nombreCompleto) {
+                throw new Error(`No se pudo leer el contenido del PDF ${fileBuffer.originalname} y el nombre del archivo no contiene suficiente información. Proporciona "fichaAsignada" o asegúrate de que el nombre del archivo incluya ficha y nombre.`);
             }
         }
 
