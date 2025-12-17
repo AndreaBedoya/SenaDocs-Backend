@@ -28,8 +28,6 @@ function generarContenidoHtmlDetalle(aprendiz, ficha) {
             <td>${juicio.competencia}</td>
             <td>${juicio.resultado}</td>
             <td style="color: ${color};">${juicio.juicio}</td>
-            <td>${juicio.fecha_juicio}</td>
-            <td>${juicio.funcionario}</td>
         </tr>
         `;
     });
@@ -57,8 +55,9 @@ function generarContenidoHtmlDetalle(aprendiz, ficha) {
         <h2>Ficha: ${ficha}</h2>
         
         <div class="resumen">
-            <h3>Aprendiz: ${aprendiz.nombre} ${aprendiz.apellido} (${aprendiz.documento})</h3>
-            <p><strong>Avance Aprobado:</strong> ${porcentajeAvance}% (${aprobados} de ${totalJuicios} juicios)</p>
+            <h3>Aprendiz: ${aprendiz.nombre} ${aprendiz.apellido} )</h3>
+            <h3>Documento: ${aprendiz.documento}</h3>
+            <p><strong>Avance Aprobado:</strong> ${porcentajeAvance}% (${aprobados} de ${totalJuicios} juicios aprobados)</p>
         </div>
 
         <h3>Detalle de Evaluaciones</h3>
@@ -68,8 +67,6 @@ function generarContenidoHtmlDetalle(aprendiz, ficha) {
                     <th>Competencia</th>
                     <th>Resultado de Aprendizaje</th>
                     <th>Juicio</th>
-                    <th>Fecha Juicio</th>
-                    <th>Funcionario</th>
                 </tr>
             </thead>
             <tbody>

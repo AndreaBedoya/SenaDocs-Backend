@@ -4,6 +4,8 @@ async function procesarExcel(rutaExcel) {
     const rows = await readExcelFile(rutaExcel);
 
     const ficha = rows[2]?.[2] ?? null;
+    const centroFormacion = rows[11]?.[2] ?? null;
+    console.log(centroFormacion);
 
     const normalizarNombre = (texto) => {
         if (typeof texto !== 'string') return '';
@@ -123,6 +125,7 @@ async function procesarExcel(rutaExcel) {
 
     return {
         ficha: ficha,
+        centroFormacion: centroFormacion,
         resumenGlobal: resumen,
         aprendicesDetalle: lista
     };

@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { generarPDFDetalle, generarPDFElegibles } = require("../services/pdfGenerator");
+const { generarExcelSaberTyT} = require("../services/ExcelGenerator")
 // Importar la caché del controlador de subida
 const { cache } = require("./JuicioEvaluativoController");
 
@@ -47,11 +48,10 @@ async function generarReporteIndividual(req, res) {
 }
 
 
-// GENERACIÓN DEL REPORTE POR FICHA (ELEGIBLES TYT)
+// GENERACIÓN DEL REPORTE POR FICHA
 async function generarReporteElegibles(req, res) {
-    const { datosCargados } = req; // Obtenido de verificarCarga
+    const { datosCargados } = req;
 
-    // Aplicar la lógica de negocio (filtro de 75%)
     const elegibles = datosCargados.resumenGlobal.filter(aprendiz => {
         const porcentajeStr = aprendiz.porcentajeJuiciosEvaluados.replace('%', '');
         return parseFloat(porcentajeStr) >= 75;
@@ -77,8 +77,37 @@ async function generarReporteElegibles(req, res) {
     }
 }
 
+async function generarExcelElegibles(req, res) {
+    const { datosCargados } = req;
+
+    try {
+        const rutaExcel = await generarExcelSaberTyT(
+            datosCargados.resumenGlobal,
+            datosCargados.ficha,
+            datosCargados.centroFormacion
+        );
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="Reporte_TyT_${datosCargados.ficha}.xlsx"`);
+
+        const fileStream = fs.createReadStream(rutaExcel);
+        fileStream.pipe(res);
+
+        fileStream.on('close', () => {
+            fs.unlink(rutaExcel, (err) => {
+                if (err) console.error("Error al borrar temp excel:", err);
+            });
+        });
+
+    } catch (error) {
+        console.error("Error al generar Excel TyT:", error);
+        res.status(500).json({ msg: "Error al generar el archivo Excel." });
+    }
+}
+
 module.exports = {
     verificarCarga,
     generarReporteIndividual,
-    generarReporteElegibles
+    generarReporteElegibles,
+    generarExcelElegibles
 };

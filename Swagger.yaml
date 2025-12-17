@@ -337,3 +337,31 @@ paths:
             description: ID de archivo no encontrado o sesión expirada.
           '500':
             description: Error al generar el PDF.
+
+  /juicios-evaluativos/reporte/excel-tyt/{archivoId}:
+    get:
+      tags:
+        - Juicios Evaluativos
+      summary: Genera el reporte Excel de habilitados para Saber TyT.
+      description: |
+        Genera un archivo Excel (.xlsx) con el listado de todos los aprendices, su porcentaje de avance 
+        y su estado ("HABILITADO" o "NO HABILITADO") basado en el cumplimiento del 75% de juicios aprobados.
+      parameters:
+        - name: archivoId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID único obtenido tras la carga del Excel original.
+      responses:
+        '200':
+          description: Archivo Excel generado con éxito.
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: ID de archivo no encontrado o sesión expirada.
+        '500':
+          description: Error interno al generar el archivo Excel.
