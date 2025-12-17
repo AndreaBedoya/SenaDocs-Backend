@@ -1,4 +1,4 @@
-const { procesarExcel } = require("../services/excelReader");
+const { procesarExcel } = require("../services/ExcelReader");
 const cache = new Map();
 
 async function uploadJuicios(req, res) {

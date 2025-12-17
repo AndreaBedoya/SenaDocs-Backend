@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const { generarPDFDetalle, generarPDFElegibles } = require("../services/pdfGenerator");
+const { generarPDFDetalle, generarPDFElegibles } = require("../services/PdfGenerator");
+const { leerNovedades } = require("../services/NewsAcademicsService");
 // Importar la caché del controlador de subida
 const { cache } = require("./JuicioEvaluativoController");
 
@@ -77,8 +78,16 @@ async function generarReporteElegibles(req, res) {
     }
 }
 
+async function graficaNovedades(req, res) {
+    const { datosCargados } = req;
+
+    return res.status(200).json({ success: true, message: "aasdasdsad", data: datosCargados });
+
+}
+
 module.exports = {
     verificarCarga,
     generarReporteIndividual,
-    generarReporteElegibles
+    generarReporteElegibles,
+    graficaNovedades
 };
