@@ -25,18 +25,31 @@ const UsuarioController = {
             }
 
             let usuarioActualizado = instanciasActualizadas?.[0] || await UserRepository.findById(userId);
+            const u = usuarioActualizado ? usuarioActualizado.get({ plain: true }) : null;
 
-            const respuestaUsuario = usuarioActualizado ? usuarioActualizado.get({ plain: true }) : null;
-            if (respuestaUsuario) {
-                delete respuestaUsuario.password;
-                delete respuestaUsuario.reset_password_token;
-                delete respuestaUsuario.reset_password_expires;
+            if (u) {
+                delete u.password;
+                delete u.reset_password_token;
+                delete u.reset_password_expires;
             }
+
+            const perfil = {
+                nombre_completo: `${u?.nombre || ""} ${u?.apellido || ""}`.trim(),
+                correo: u?.email || null,
+                ciudad: u?.ciudad || null,
+                fecha_nacimiento: u?.fecha_nacimiento || null,
+                telefono: u?.telefono || null,
+                documento: u?.documento || null,
+                cargo: u?.cargo || null,
+                funciones: u?.funciones_trabajo || null,
+                foto: u?.foto || null,
+                centro_formacion: u?.centro_formacion || null
+            };
 
             return res.status(200).json({
                 success: true,
                 message: "Usuario actualizado exitosamente",
-                usuario: respuestaUsuario,
+                usuario: perfil,
             });
 
         } catch (error) {
@@ -77,18 +90,31 @@ const UsuarioController = {
             }
 
             const [filas, actualizados] = await UserRepository.update(usuario.id, datosActualizar);
-            const actualizado = actualizados?.[0]?.get({ plain: true });
+            const u = actualizados?.[0]?.get({ plain: true });
 
-            if (actualizado) {
-                delete actualizado.password;
-                delete actualizado.reset_password_token;
-                delete actualizado.reset_password_expires;
+            if (u) {
+                delete u.password;
+                delete u.reset_password_token;
+                delete u.reset_password_expires;
             }
+
+            const perfil = {
+                nombre_completo: `${u?.nombre || ""} ${u?.apellido || ""}`.trim(),
+                correo: u?.email || null,
+                ciudad: u?.ciudad || null,
+                fecha_nacimiento: u?.fecha_nacimiento || null,
+                telefono: u?.telefono || null,
+                documento: u?.documento || null,
+                cargo: u?.cargo || null,
+                funciones: u?.funciones_trabajo || null,
+                foto: u?.foto || null,
+                centro_formacion: u?.centro_formacion || null
+            };
 
             return res.status(200).json({
                 success: true,
                 message: "Usuario actualizado correctamente",
-                usuario: actualizado
+                usuario: perfil
             });
         } catch (error) {
             console.error("Error al actualizar usuario por documento:", error);
