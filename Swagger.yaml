@@ -181,12 +181,18 @@ paths:
         '500':
           description: Error interno al procesar el cambio.
 
-  /documents/renombrar-descargar:
+  /documents/renombrar-guardar-escritorio:
     post:
       tags:
         - Documentos
-      summary: Renombrar PDFs y descargar un archivo ZIP organizado por Ficha.
-      description: Sube uno o varios archivos PDF y los renombra según la nomenclatura (Documento_NombreCompleto_Ficha). Crea un ZIP con subcarpetas para separar los archivos de distintas fichas.
+      summary: Renombrar PDFs y guardarlos directamente en el Escritorio del servidor.
+      description: >
+        Sube uno o varios archivos PDF, los renombra según la nomenclatura
+        (Documento_NombreCompleto_Ficha) y los guarda en el Escritorio del
+        equipo donde está corriendo el backend, dentro de una carpeta
+        principal `nombreCarpeta` y subcarpetas por ficha (`nombreCarpeta ficha`).
+        En la respuesta JSON indica si la carpeta principal, las carpetas de ficha
+        y cada archivo fueron creados o actualizados.
       security:
         - bearerAuth: []
       requestBody:
@@ -199,27 +205,76 @@ paths:
               properties:
                 nombreCarpeta:
                   type: string
-                  description: Nombre de la carpeta principal del ZIP (ej: Certificaciones).
+                  description: Nombre de la carpeta principal que se creará/actualizará en el Escritorio.
                   example: Certificaciones
                 fichaAsignada:
                   type: string
-                  description: Código de ficha a asignar a TODOS los archivos si la ficha no se encuentra en el PDF. (Solo requerido si el PDF no tiene ficha).
+                  description: Código de ficha a asignar a TODOS los archivos si la ficha no se encuentra en el PDF.
                   example: "2562076"
                 documentos:
                   type: array
                   items:
                     type: string
                     format: binary
-                  description: |
-                    Lista de archivos PDF a renombrar y procesar.
+                  description: Lista de archivos PDF a renombrar y guardar en el Escritorio.
       responses:
         '200':
-          description: Archivo ZIP generado y descargado con éxito.
+          description: Archivos procesados y guardados en el Escritorio.
           content:
-            application/zip:
+            application/json:
               schema:
-                type: string
-                format: binary
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  mensaje_carpeta_principal:
+                    type: string
+                    description: Indica si la carpeta principal fue creada o actualizada.
+                    example: "creado"
+                  carpeta_principal:
+                    type: string
+                    description: Ruta absoluta de la carpeta principal en el Escritorio del servidor.
+                  archivos:
+                    type: array
+                    description: Detalle de cada archivo procesado.
+                    items:
+                      type: object
+                      properties:
+                        archivo_original:
+                          type: string
+                          example: "mi_archivo.pdf"
+                        archivo_final:
+                          type: string
+                          example: "1019986399_RAFAEL_ALEXIS_RAMÍREZ_VELOZA_2711840.pdf"
+                        ficha:
+                          type: string
+                          example: "2711840"
+                        ruta:
+                          type: string
+                          description: Ruta absoluta del archivo guardado en el Escritorio del servidor.
+                        estado_archivo:
+                          type: string
+                          description: Indica si el archivo fue creado o actualizado.
+                          example: "creado"
+                        estado_carpeta_principal:
+                          type: string
+                          description: Indica si la carpeta principal fue creada o actualizada.
+                          example: "creado"
+                        estado_carpeta_ficha:
+                          type: string
+                          description: Indica si la carpeta de la ficha fue creada o actualizada.
+                          example: "actualizado"
+                  errores:
+                    type: array
+                    description: Lista de archivos que no se pudieron procesar.
+                    items:
+                      type: object
+                      properties:
+                        archivo:
+                          type: string
+                        error:
+                          type: string
         '400':
           description: Faltan archivos o el nombre de la carpeta / La lógica de extracción falló.
           content:
@@ -227,21 +282,36 @@ paths:
               schema:
                 type: object
                 properties:
+                  success:
+                    type: boolean
+                    example: false
                   message:
                     type: string
                     example: "Faltan archivos o el nombre de la carpeta."
+                  errores:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        archivo:
+                          type: string
+                        error:
+                          type: string
         '401':
           description: No autorizado. Token faltante o inválido.
         '500':
-          description: Error interno del servidor o error en la compresión ZIP.
+          description: Error interno del servidor o al guardar los archivos en el Escritorio.
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  success:
+                    type: boolean
+                    example: false
                   message:
                     type: string
-                    example: "Error interno al procesar los documentos."
+                    example: "Error interno al procesar y guardar los documentos."
 
   /juicios-evaluativos/upload-juicios:
     post:
@@ -337,3 +407,57 @@ paths:
             description: ID de archivo no encontrado o sesión expirada.
           '500':
             description: Error al generar el PDF.
+
+  /novedades-academicas/reporte:
+    post:
+      tags:
+        - Novedades Academicas
+      summary: Genera un Excel de Novedades Académicas con porcentajes y gráfica.
+      description: >
+        Sube un archivo Excel que contenga una tabla de Novedades Académicas
+        (columnas "Novedad Académica" y "Cantidad"). El servidor calcula los
+        porcentajes, genera una tercera columna "Porcentaje" y crea un nuevo
+        archivo Excel con la tabla formateada y un gráfico de pastel incrustado.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                archivo:
+                  type: string
+                  format: binary
+                  description: >
+                    Archivo Excel con la tabla de Novedades Académicas.
+                    Debe tener al menos dos columnas: "Novedad Académica" y "Cantidad".
+              required:
+                - archivo
+      responses:
+        '200':
+          description: Excel de Novedades Académicas generado correctamente.
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Archivo no proporcionado o no contiene datos válidos de novedades.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: No se recibió ningún archivo Excel.
+        '500':
+          description: Error al procesar el archivo o generar el Excel de novedades.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Error al generar el Excel de novedades académicas.

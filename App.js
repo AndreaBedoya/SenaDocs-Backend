@@ -18,7 +18,8 @@ const swaggerDocument = YAML.load("./swagger.yaml");
 const { connectDB } = require("./config/Database");
 const authRoutes = require("./internal/routes/AuthRoutes");
 const documentRoutes = require("./internal/routes/DocumentRoutes");
-const juicioEvaluativoRoutes = require("./internal/routes/juicioEvaluativoRoutes")
+const juicioEvaluativoRoutes = require("./internal/routes/juicioEvaluativoRoutes");
+const newAcademicsRoutes = require("./internal/routes/NewAcademicsRoutes");
 
 // CORS CONFIG
 app.use(cors({
@@ -42,6 +43,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", usuarioRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/juicios-evaluativos", juicioEvaluativoRoutes);
+app.use("/api/novedades-academicas", newAcademicsRoutes);
 
 // Ruta base
 app.get("/", (req, res) => {

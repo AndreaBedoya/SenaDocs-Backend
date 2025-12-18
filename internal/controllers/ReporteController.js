@@ -1,7 +1,6 @@
-const path = require('path');
-const fs = require('fs');
+const path = require("path");
+const fs = require("fs");
 const { generarPDFDetalle, generarPDFElegibles } = require("../services/PdfGenerator");
-const { leerNovedades } = require("../services/NewsAcademicsService");
 // Importar la caché del controlador de subida
 const { cache } = require("./JuicioEvaluativoController");
 
@@ -16,7 +15,6 @@ function verificarCarga(req, res, next) {
     req.datosCargados = datosCargados; // Adjuntar los datos al objeto request
     next();
 }
-
 
 // GENERACIÓN DEL REPORTE INDIVIDUAL
 async function generarReporteIndividual(req, res) {
@@ -46,7 +44,6 @@ async function generarReporteIndividual(req, res) {
         res.status(500).json({ msg: "Error al generar el PDF del reporte individual." });
     }
 }
-
 
 // GENERACIÓN DEL REPORTE POR FICHA (ELEGIBLES TYT)
 async function generarReporteElegibles(req, res) {
@@ -78,16 +75,8 @@ async function generarReporteElegibles(req, res) {
     }
 }
 
-async function graficaNovedades(req, res) {
-    const { datosCargados } = req;
-
-    return res.status(200).json({ success: true, message: "aasdasdsad", data: datosCargados });
-
-}
-
 module.exports = {
     verificarCarga,
     generarReporteIndividual,
     generarReporteElegibles,
-    graficaNovedades
 };

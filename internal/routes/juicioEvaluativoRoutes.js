@@ -2,7 +2,6 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { graficaNovedades } = require("../controllers/ReporteController");
 
 const { uploadJuicios } = require("../controllers/JuicioEvaluativoController");
 const {

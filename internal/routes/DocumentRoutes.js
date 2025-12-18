@@ -4,10 +4,10 @@ const uploadFiles = require("../../config/MulterConfig");
 const documentController = require("../controllers/DocumentController");
 
 router.post(
-    "/renombrar-descargar",
+    "/renombrar-guardar-escritorio",
     authMiddleware,
     uploadFiles,
-    documentController.renombrarDescargar
+    documentController.renombrarGuardarEnEscritorio
 );
 
 module.exports = router;
