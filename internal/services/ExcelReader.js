@@ -1,123 +1,136 @@
-const xlsx = require("xlsx");
-const fs = require("fs");
+const readExcelFile = require('read-excel-file/node');
 
 async function procesarExcel(rutaExcel) {
-  try {
-    const buffer = fs.readFileSync(rutaExcel);
-    const workbook = xlsx.read(buffer, { type: "buffer" });
-    const hoja = workbook.Sheets[workbook.SheetNames[0]];
-    const rows = xlsx.utils.sheet_to_json(hoja, { header: 1 });
-
-    if (!rows || rows.length < 13) {
-      throw new Error("El archivo Excel no tiene el formato esperado (mínimo 13 filas)");
-    }
+    const rows = await readExcelFile(rutaExcel);
 
     const ficha = rows[2]?.[2] ?? null;
+    const centroFormacion = rows[11]?.[2] ?? null;
+    console.log(centroFormacion);
 
     const normalizarNombre = (texto) => {
-      if (typeof texto !== "string") return "";
-      return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        if (typeof texto !== 'string') return '';
+        return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
     };
 
     const NOMBRE_COLUMNAS = {
-      "numero de documento": "documento",
-      "nombre": "nombre",
-      "apellidos": "apellido",
-      "tipo de documento": "tipo_documento",
-      "estado": "estado",
-      "competencia": "competencia",
-      "resultado de aprendizaje": "resultado",
-      "juicio de evaluacion": "juicio",
-      "fecha y hora del juicio evaluativo": "fecha_juicio",
-      "funcionario que registro el juicio evaluativo": "funcionario"
+        'numero de documento': 'documento',
+        'nombre': 'nombre',
+        'apellidos': 'apellido',
+        'tipo de documento': 'tipo_documento',
+        'estado': 'estado',
+        'competencia': 'competencia',
+        'resultado de aprendizaje': 'resultado',
+        'juicio de evaluacion': 'juicio',
+        'fecha y hora del juicio evaluativo': 'fecha_juicio',
+        'funcionario que registro el juicio evaluativo': 'funcionario'
     };
 
     const encabezadosExcel = rows[12] || [];
     const mapaIndices = {};
 
-    encabezadosExcel.forEach((col, i) => {
-      const normalizado = normalizarNombre(col);
-      if (NOMBRE_COLUMNAS[normalizado]) {
-        mapaIndices[NOMBRE_COLUMNAS[normalizado]] = i;
-      }
-    });
-
-    if (!mapaIndices.documento || !mapaIndices.nombre || !mapaIndices.apellido || !mapaIndices.juicio) {
-      throw new Error("No se encontraron las columnas necesarias en el encabezado del Excel");
+    for (let i = 0; i < encabezadosExcel.length; i++) {
+        const normalizado = normalizarNombre(encabezadosExcel[i]);
+        if (NOMBRE_COLUMNAS[normalizado]) {
+            mapaIndices[NOMBRE_COLUMNAS[normalizado]] = i;
+        }
     }
 
     const datosAprendices = rows.slice(13);
     const aprendicesAgrupados = {};
 
-    datosAprendices.forEach((fila) => {
-      if (!fila) return;
-      fila = fila.map((v) => (v === null || v === undefined ? "" : v));
-      if (fila.every((c) => c.toString().trim() === "")) return;
+    datosAprendices.forEach(fila => {
+        if (!fila) return;
 
-      const doc = fila[mapaIndices.documento];
-      if (!doc) return;
+        // LIMPIAR FILA (convertir null o undefined a "")
+        fila = fila.map(v => (v === null || v === undefined ? "" : v));
 
-      const docStr = doc.toString().trim();
-      if (docStr === "" || !/\d/.test(docStr) || docStr.length < 5) return;
+        // Fila completamente vacía
+        if (fila.every(c => c.toString().trim() === "")) return;
 
-      const nombre = fila[mapaIndices.nombre];
-      const apellido = fila[mapaIndices.apellido];
-      const nombreLimpio = (nombre || "").toString().trim();
-      const apellidoLimpio = (apellido || "").toString().trim();
-      if (nombreLimpio === "" && apellidoLimpio === "") return;
+        const doc = fila[mapaIndices.documento];
 
-      if (!aprendicesAgrupados[docStr]) {
-        aprendicesAgrupados[docStr] = {
-          documento: docStr,
-          nombre: nombreLimpio,
-          apellido: apellidoLimpio,
-          juicios: []
-        };
-      }
+        // Documento inexistente
+        if (!doc) return;
 
-      const juicio = {};
-      for (const [prop, idx] of Object.entries(mapaIndices)) {
-        juicio[prop] = fila[idx] ?? "";
-      }
+        const docStr = doc.toString().trim();
 
-      aprendicesAgrupados[docStr].juicios.push(juicio);
+        // Documento vacío o solo espacios
+        if (docStr === "") return;
+
+        // Documento NO contiene números
+        if (!/\d/.test(docStr)) return;
+
+        // Documento demasiado corto
+        if (docStr.length < 5) return;
+
+        const nombre = fila[mapaIndices.nombre];
+        const apellido = fila[mapaIndices.apellido];
+
+        // fila con documento pero sin nombre y apellido
+        const nombreLimpio = (nombre || "").toString().trim();
+        const apellidoLimpio = (apellido || "").toString().trim();
+
+        if (nombreLimpio === "" && apellidoLimpio === "") return;
+
+        // Crear aprendiz si no existe
+        if (!aprendicesAgrupados[docStr]) {
+            aprendicesAgrupados[docStr] = {
+                documento: docStr,
+                nombre: nombreLimpio,
+                apellido: apellidoLimpio,
+                juicios: [] // Almacena el detalle de juicios
+            };
+        }
+
+        const juicio = {};
+        for (const [prop, idx] of Object.entries(mapaIndices)) {
+            juicio[prop] = fila[idx] ?? "";
+        }
+
+        aprendicesAgrupados[docStr].juicios.push(juicio);
     });
 
     const lista = Object.values(aprendicesAgrupados);
     const resumen = [];
 
-    lista.forEach((aprendiz) => {
-      const item = {
-        documento: aprendiz.documento,
-        nombre: `${aprendiz.nombre} ${aprendiz.apellido}`,
-        ficha,
-        juicios: aprendiz.juicios.length
-      };
+    lista.forEach(aprendiz => {
+        const item = {};
 
-      let aprobados = 0;
-      let porEvaluar = 0;
+        item.documento = aprendiz.documento;
+        item.nombre = `${aprendiz.nombre} ${aprendiz.apellido}`;
+        item.ficha = ficha;
+        item.juicios = aprendiz.juicios.length;
 
-      aprendiz.juicios.forEach((j) => {
-        const juicioTexto = (j.juicio || "").toString().trim().toUpperCase();
-        if (juicioTexto === "APROBADO") aprobados++;
-        if (juicioTexto === "POR EVALUAR") porEvaluar++;
-      });
+        let aprobados = 0;
+        let porEvaluar = 0;
 
-      item.juiciosAprobados = aprobados;
-      item.juiciosPorEvaluar = porEvaluar;
-      item.porcentajeJuiciosEvaluados = Math.round((aprobados / item.juicios) * 100) + "%";
-      item.porcentajeJuiciosPorEvaluar = Math.round((porEvaluar / item.juicios) * 100) + "%";
+        aprendiz.juicios.forEach(j => {
+            const eval = (j.juicio || "").toString().trim().toUpperCase();
+            if (eval === "APROBADO") aprobados++;
+            if (eval === "POR EVALUAR") porEvaluar++;
+        });
 
-      resumen.push(item);
+        item.juiciosAprobados = aprobados;
+        item.juiciosPorEvaluar = porEvaluar;
+
+        // Evitar división por cero
+        item.porcentajeJuiciosEvaluados =
+            item.juicios > 0 ? (Math.round((aprobados / item.juicios) * 100) + "%") : "0%";
+
+        item.porcentajeJuiciosPorEvaluar =
+            item.juicios > 0 ? (Math.round((porEvaluar / item.juicios) * 100) + "%") : "0%";
+
+        resumen.push(item);
     });
 
-    return resumen;
-  } catch (error) {
-    console.error("❌ Error en procesarExcel:", error.message);
-    throw error;
-  }
+    return {
+        ficha: ficha,
+        centroFormacion: centroFormacion,
+        resumenGlobal: resumen,
+        aprendicesDetalle: lista
+    };
 }
 
 module.exports = {
-  procesarExcel
+    procesarExcel
 };
