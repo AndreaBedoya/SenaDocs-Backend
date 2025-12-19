@@ -48,10 +48,11 @@ async function generarReporteIndividual(req, res) {
 }
 
 
-// GENERACIÓN DEL REPORTE POR FICHA
+// GENERACIÓN DEL REPORTE POR FICHA (ELEGIBLES TYT)
 async function generarReporteElegibles(req, res) {
     const { datosCargados } = req;
 
+    // Aplicar la lógica de negocio (filtro de 75%)
     const elegibles = datosCargados.resumenGlobal.filter(aprendiz => {
         const porcentajeStr = aprendiz.porcentajeJuiciosEvaluados.replace('%', '');
         return parseFloat(porcentajeStr) >= 75;
