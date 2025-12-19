@@ -34,8 +34,8 @@ const UsuarioController = {
             }
 
             const perfil = {
-                nombre_completo: `${u?.nombre || ""} ${u?.apellido || ""}`.trim(),
-                correo: u?.email || null,
+                nombre: `${u?.nombre || ""} ${u?.apellido || ""}`.trim(),
+                email: u?.email || null,
                 ciudad: u?.ciudad || null,
                 fecha_nacimiento: u?.fecha_nacimiento || null,
                 telefono: u?.telefono || null,
