@@ -226,7 +226,7 @@ async function generarExcelNovedades(rutaExcel) {
     const buffer = await workbook.xlsx.writeBuffer();
     const fileName = `Novedades_Academicas_${Date.now()}.xlsx`;
 
-    return { buffer, fileName };
+    return { buffer, fileName, dataRows };
 }
 
 module.exports = {
