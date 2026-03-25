@@ -13,15 +13,13 @@ async function generarReporteNovedades(req, res) {
 
         const rutaExcel = req.file.path;
 
-        const { buffer, fileName } = await generarExcelNovedades(rutaExcel);
+        const { buffer, fileName, resumen } = await generarExcelNovedades(rutaExcel);
 
-        res.setHeader(
-            "Content-Type",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        );
-        res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
-
-        return res.send(buffer);
+        return res.status(200).json({
+            resumen,
+            archivoBase64: Buffer.from(buffer).toString("base64"),
+            fileName,
+        });
     } catch (error) {
         console.error("Error al generar Excel de novedades académicas:", error);
         return res.status(500).json({ msg: "Error al generar el Excel de novedades académicas." });

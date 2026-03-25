@@ -14,7 +14,7 @@ const chartHeight = 400;
  *  - Gráfico de pastel incrustado como imagen
  *
  * @param {string} rutaExcel - Ruta del archivo Excel subido por el usuario.
- * @returns {Promise<{ buffer: Buffer, fileName: string }>} - Buffer del nuevo Excel y nombre sugerido.
+ * @returns {Promise<{ buffer: Buffer, fileName: string, resumen: Array<{novedad: string, cantidad: number, porcentaje: number}> }>} - Buffer del nuevo Excel, nombre sugerido y resumen calculado.
  */
 async function generarExcelNovedades(rutaExcel) {
     // Leer todas las filas del Excel original
@@ -226,7 +226,13 @@ async function generarExcelNovedades(rutaExcel) {
     const buffer = await workbook.xlsx.writeBuffer();
     const fileName = `Novedades_Academicas_${Date.now()}.xlsx`;
 
-    return { buffer, fileName };
+    const resumen = dataRows.map(item => ({
+        novedad: item.novedad,
+        cantidad: item.cantidad,
+        porcentaje: item.porcentaje
+    }));
+
+    return { buffer, fileName, resumen };
 }
 
 module.exports = {

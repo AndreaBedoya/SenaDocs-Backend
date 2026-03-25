@@ -7,7 +7,8 @@ const { uploadJuicios } = require("../controllers/JuicioEvaluativoController");
 const {
     verificarCarga,
     generarReporteIndividual,
-    generarReporteElegibles
+    generarReporteElegibles,
+    generarReporteExcelTyt
 } = require("../controllers/reporteController");
 
 const router = express.Router();
@@ -43,6 +44,12 @@ router.get(
     "/reporte/elegibles/:archivoId",
     verificarCarga,
     generarReporteElegibles
+);
+
+router.get(
+    "/reporte/excel-tyt/:archivoId",
+    verificarCarga,
+    generarReporteExcelTyt
 );
 
 module.exports = router;
